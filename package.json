@@ -1,0 +1,49 @@
+{
+    "name": "rajsatyam",
+    "version": "0.1.3",
+    "description": "Unstyled, accessible UI components for React Native, inspired by shadcn/ui",
+    "main": "index.js",
+    "bin": {
+        "rajsatyam": "./cli/index.js"
+    },
+    "files": [
+        "cli/",
+        "components/",
+        "index.js",
+        "README.md"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "react-native",
+        "ui",
+        "components",
+        "shadcn",
+        "design-system",
+        "mobile",
+        "expo",
+        "react-native-components",
+        "ui-library"
+    ],
+    "author": "Satyam Raj",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/YOUR_USERNAME/rajsatyam.git"
+    },
+    "bugs": {
+        "url": "https://github.com/YOUR_USERNAME/rajsatyam/issues"
+    },
+    "homepage": "https://github.com/YOUR_USERNAME/rajsatyam#readme",
+    "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-native": ">=0.60.0"
+    },
+    "dependencies": {
+        "fs-extra": "^10.1.0"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    }
+}
