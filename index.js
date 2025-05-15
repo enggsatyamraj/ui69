@@ -5,4 +5,5 @@ module.exports = {
 
     // Export components for direct import if needed
     Button: require('./components/ui/button/button').Button,
+    Skeleton: require('./components/ui/skeleton').Skeleton,
 };

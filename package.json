@@ -41,10 +41,16 @@
         "react-native": ">=0.60.0"
     },
     "dependencies": {
+        "expo-linear-gradient": "^14.1.4",
         "fs-extra": "^10.1.0",
-        "inquirer": "^8.2.6"
+        "inquirer": "^8.2.6",
+        "react-native-reanimated": "^3.17.5"
     },
     "engines": {
         "node": ">=14.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^19.1.4",
+        "@types/react-native": "^0.73.0"
     }
 }

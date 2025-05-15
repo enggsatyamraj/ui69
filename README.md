@@ -38,65 +38,54 @@ npx rajsatyam list
 ## Available Components
 
 - Button - A pressable button component with multiple variants and sizes
+- Skeleton - Loading placeholder component with shimmer and wave animations
 - More components coming soon!
 
-## Button Component Example
+## Skeleton Component Example
 
 ```jsx
 import { View } from 'react-native';
-import { Button } from './components/ui/button';
+import { Skeleton } from './components/ui/skeleton';
 
 export default function App() {
   return (
     <View style={{ padding: 16, gap: 8 }}>
-      {/* Default button */}
-      <Button onPress={() => console.log('Pressed')}>
-        Default Button
-      </Button>
+      {/* Default shimmer animation */}
+      <Skeleton width="100%" height={20} />
       
-      {/* Destructive variant */}
-      <Button 
-        variant="destructive" 
-        onPress={() => console.log('Delete pressed')}
-      >
-        Delete Item
-      </Button>
+      {/* Wave animation */}
+      <Skeleton 
+        width="80%" 
+        height={20} 
+        animationType="wave" 
+      />
       
-      {/* Outline variant */}
-      <Button 
-        variant="outline" 
-        onPress={() => console.log('Outline pressed')}
-      >
-        Outline
-      </Button>
+      {/* Custom styling */}
+      <Skeleton 
+        width={60} 
+        height={60} 
+        borderRadius={30}
+        backgroundColor="#c0c0c0"
+        highlightColor="rgba(255, 255, 255, 0.6)"
+      />
       
-      {/* Different sizes */}
-      <Button size="sm">Small Button</Button>
-      <Button size="lg">Large Button</Button>
+      {/* Custom animation speed */}
+      <Skeleton 
+        width="90%" 
+        height={16} 
+        duration={2000} // Slower animation
+      />
       
-      {/* Loading and disabled states */}
-      <Button loading>Loading...</Button>
-      <Button disabled>Disabled</Button>
+      {/* No animation */}
+      <Skeleton 
+        width="100%" 
+        height={20} 
+        animationType="none" 
+      />
     </View>
   );
 }
 ```
-
-## Button Variants
-
-- `default` - Default button style
-- `destructive` - For destructive actions like delete
-- `outline` - Button with an outline
-- `secondary` - Alternative style
-- `ghost` - Button without a background
-- `link` - Button that looks like a link
-
-## Button Sizes
-
-- `default` - Default size
-- `sm` - Small button
-- `lg` - Large button
-- `icon` - Icon button (square)
 
 ## License
 

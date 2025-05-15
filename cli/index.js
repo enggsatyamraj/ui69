@@ -78,8 +78,18 @@ function getComponentsConfig() {
                     dest: 'components/ui/button.tsx',
                 }
             ]
+        },
+        skeleton: {
+            name: "Skeleton",
+            description: "Skeleton loading component with shimmer and wave animations",
+            dependencies: ['react-native-reanimated', 'expo-linear-gradient'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/skeleton.tsx'),
+                    dest: 'components/ui/skeleton.tsx',
+                }
+            ]
         }
-        // Add more components here as your library grows
     };
 }
 
