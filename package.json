@@ -30,12 +30,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/YOUR_USERNAME/rajsatyam.git"
+        "url": "git+https://github.com/enggsatyamraj/rajsatyam-packages.git"
     },
     "bugs": {
-        "url": "https://github.com/YOUR_USERNAME/rajsatyam/issues"
+        "url": "https://github.com/enggsatyamraj/rajsatyam-packages/issues"
     },
-    "homepage": "https://github.com/YOUR_USERNAME/rajsatyam#readme",
+    "homepage": "https://github.com/enggsatyamraj/rajsatyam-packages#readme",
     "peerDependencies": {
         "react": ">=16.8.0",
         "react-native": ">=0.60.0"
