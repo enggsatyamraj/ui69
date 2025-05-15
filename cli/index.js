@@ -11,6 +11,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Define component directory path - this is critical for finding component files
+// We need to use __dirname to get the actual location of this script
+const COMPONENT_DIR = path.join(__dirname, '../components');
+
 // Check if we need to install inquirer
 try {
     require.resolve('inquirer');
@@ -48,36 +52,42 @@ const log = {
     muted: (text) => console.log(`${colors.gray}${text}${colors.reset}`)
 };
 
-// Available components configuration
-const components = {
-    button: {
-        name: "Button",
-        description: "A pressable button component with multiple variants and sizes",
-        dependencies: [],
-        files: [
-            {
-                src: path.join(__dirname, '../components/ui/button.tsx'),
-                dest: 'components/ui/button.tsx',
-            }
-        ]
+// Ensure component directory exists
+function ensureComponentsExist() {
+    if (!fs.existsSync(COMPONENT_DIR)) {
+        log.error(`Components directory not found: ${COMPONENT_DIR}`);
+        log.info(`Make sure the package is installed correctly and the components directory exists.`);
+        log.info(`Current directory: ${__dirname}`);
+        process.exit(1);
     }
-    // Add more components here as your library grows
-    // Example:
-    // card: {
-    //   name: "Card",
-    //   description: "A card component with header, content, and footer",
-    //   dependencies: [],
-    //   files: [
-    //     {
-    //       src: path.join(__dirname, '../components/ui/card.tsx'),
-    //       dest: 'components/ui/card.tsx',
-    //     }
-    //   ]
-    // }
-};
+}
+
+// Available components configuration
+function getComponentsConfig() {
+    // Check component directory exists
+    ensureComponentsExist();
+
+    return {
+        button: {
+            name: "Button",
+            description: "Button",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/button.tsx'),
+                    dest: 'components/ui/button.tsx',
+                }
+            ]
+        }
+        // Add more components here as your library grows
+    };
+}
 
 // Interactive component selector with space selection
 async function selectComponents() {
+    // Get components configuration
+    const components = getComponentsConfig();
+
     // Show splash screen
     showSplash();
 
@@ -85,7 +95,7 @@ async function selectComponents() {
 
     // Convert components to choices format for inquirer
     const choices = Object.entries(components).map(([key, value]) => ({
-        name: `${value.name} - ${value.description}`,
+        name: `${value.name}`,
         value: key,
         checked: false
     }));
@@ -116,6 +126,9 @@ async function selectComponents() {
 
 // Function to install a component
 async function installComponent(component) {
+    // Get components configuration
+    const components = getComponentsConfig();
+
     // Check if the component exists
     if (!components[component]) {
         log.error(`Component '${component}' not found.`);
@@ -126,7 +139,6 @@ async function installComponent(component) {
     const config = components[component];
 
     log.title(`Installing ${config.name} component`);
-    log.info(config.description);
 
     // Create the necessary directories and copy the files
     for (const file of config.files) {
@@ -136,6 +148,8 @@ async function installComponent(component) {
         // Check if source file exists
         if (!fs.existsSync(srcPath)) {
             log.error(`Source file not found: ${srcPath}`);
+            log.info(`Expected at: ${srcPath}`);
+            log.info(`Current directory: ${__dirname}`);
             process.exit(1);
         }
 
@@ -162,58 +176,18 @@ async function installComponent(component) {
 
     // Installation complete
     log.success(`\n${config.name} installed successfully!`);
-
-    // Show usage example
-    log.title('Usage Example:');
-    if (component === 'button') {
-        log.code(`
-import { View, StyleSheet } from 'react-native';
-import { Button } from './components/ui/button';
-
-export default function MyComponent() {
-  return (
-    <View style={styles.container}>
-      <Button 
-        onPress={() => console.log('Button pressed')}
-        variant="default"
-      >
-        Click Me
-      </Button>
-      
-      <Button 
-        onPress={() => console.log('Destructive pressed')}
-        variant="destructive"
-      >
-        Delete
-      </Button>
-      
-      <Button 
-        onPress={() => console.log('Outline pressed')}
-        variant="outline"
-      >
-        Outline
-      </Button>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    gap: 8,
-  }
-});
-`);
-    }
 }
 
 // List all available components
 function listComponents() {
+    // Get components configuration
+    const components = getComponentsConfig();
+
     showSplash();
     log.title('Available Components');
 
     Object.entries(components).forEach(([name, config]) => {
-        console.log(`${colors.bold}${name}${colors.reset} - ${config.description}`);
+        console.log(`${colors.bold}${name}${colors.reset}`);
     });
 
     console.log('\nTo add a component:');
@@ -227,11 +201,7 @@ function showSplash() {
     console.log(`
 ${colors.bold}${colors.magenta}╭───────────────────────────────────────────────╮${colors.reset}
 ${colors.bold}${colors.magenta}│                                               │${colors.reset}
-${colors.bold}${colors.magenta}│   ╭─╮╭─╮ ╭────╮ ╭────╮ ╭─╮ ╭─╮ ╭───╮ ╭──╮╭╮  │${colors.reset}
-${colors.bold}${colors.magenta}│   │ ╰╯ │ │ ╭╮ │ │ ╭╮ │ │ │ │ │ │ ╭ │ │  ││││ │${colors.reset}
-${colors.bold}${colors.magenta}│   │    │ │ ╰╯ │ │ ╰╯ │ │ ╰─╯ │ │ ╰─╯ │  ││││ │${colors.reset}
-${colors.bold}${colors.magenta}│   ╰────╯ ╰────╯ ╰─────╯ ╰─────╯ ╰─────╯ ╰──╯╰╯ │${colors.reset}
-${colors.bold}${colors.magenta}│                                               │${colors.reset}
+${colors.bold}${colors.magenta}│   ${colors.reset}${colors.bold}rajsatyam${colors.magenta}                                 │${colors.reset}
 ${colors.bold}${colors.magenta}│   ${colors.reset}${colors.bold}UI components for React Native${colors.magenta}              │${colors.reset}
 ${colors.bold}${colors.magenta}╰───────────────────────────────────────────────╯${colors.reset}
   `);
@@ -265,8 +235,14 @@ async function main() {
 
         case '--version':
         case '-v':
-            const packageJson = require('../package.json');
-            console.log(packageJson.version);
+            try {
+                const packageJson = require('../package.json');
+                console.log(packageJson.version);
+            } catch (error) {
+                log.error('Unable to read package.json');
+                console.error(error);
+                process.exit(1);
+            }
             break;
 
         case '--help':
