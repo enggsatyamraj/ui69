@@ -1,5 +1,5 @@
 module.exports = {
-    name: 'rajsatyam',
+    name: 'ui69',
     description: 'Unstyled, accessible UI components for React Native',
     version: require('./package.json').version,
 

@@ -1,10 +1,10 @@
-# rajsatyam
+# ui69
 
 Unstyled, accessible UI components for React Native, inspired by shadcn/ui.
 
-## What is rajsatyam?
+## What is ui69?
 
-rajsatyam is a collection of reusable, customizable UI components for React Native. Unlike traditional component libraries, rajsatyam doesn't publish the components as a package. Instead, it provides a CLI that adds the components directly to your project. This gives you complete control over the components, including the ability to customize them to fit your needs.
+ui69 is a collection of reusable, customizable UI components for React Native. Unlike traditional component libraries, ui69 doesn't publish the components as a package. Instead, it provides a CLI that adds the components directly to your project. This gives you complete control over the components, including the ability to customize them to fit your needs.
 
 ## Features
 
@@ -18,21 +18,21 @@ rajsatyam is a collection of reusable, customizable UI components for React Nati
 
 ```bash
 # Install using npx
-npx rajsatyam add <component>
+npx ui69 add <component>
 
 # Or install the CLI globally
-npm install -g rajsatyam
-rajsatyam add <component>
+npm install -g ui69
+ui69 add <component>
 ```
 
 ## Usage
 
 ```bash
 # Add components to your project
-npx rajsatyam add button
+npx ui69 add button
 
 # List all available components
-npx rajsatyam list
+npx ui69 list
 ```
 
 ## Available Components

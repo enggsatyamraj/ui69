@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * rajsatyam CLI
+ * ui69 CLI
  * 
  * A CLI tool for adding unstyled, accessible React Native UI components to your project.
  * Inspired by shadcn/ui for web.
@@ -201,9 +201,9 @@ function listComponents() {
     });
 
     console.log('\nTo add a component:');
-    log.code('  npx rajsatyam add <component>');
+    log.code('  npx ui69 add <component>');
     console.log('\nOr select from the interactive menu:');
-    log.code('  npx rajsatyam add');
+    log.code('  npx ui69 add');
 }
 
 // Show a splash screen
@@ -211,7 +211,7 @@ function showSplash() {
     console.log(`
 ${colors.bold}${colors.magenta}╭───────────────────────────────────────────────╮${colors.reset}
 ${colors.bold}${colors.magenta}│                                               │${colors.reset}
-${colors.bold}${colors.magenta}│   ${colors.reset}${colors.bold}rajsatyam${colors.magenta}                                 │${colors.reset}
+${colors.bold}${colors.magenta}│   ${colors.reset}${colors.bold}ui69${colors.magenta}                                    │${colors.reset}
 ${colors.bold}${colors.magenta}│   ${colors.reset}${colors.bold}UI components for React Native${colors.magenta}              │${colors.reset}
 ${colors.bold}${colors.magenta}╰───────────────────────────────────────────────╯${colors.reset}
   `);
@@ -259,7 +259,7 @@ async function main() {
         case '-h':
         default:
             showSplash();
-            log.title('rajsatyam CLI');
+            log.title('ui69 CLI');
             console.log('A collection of unstyled, accessible UI components for React Native');
             console.log('\nCommands:');
             console.log('  add [component]    Add a component to your project (interactive if no component specified)');
@@ -267,9 +267,9 @@ async function main() {
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
             console.log('\nExamples:');
-            log.code('  npx rajsatyam add button');
-            log.code('  npx rajsatyam add     # Interactive component selection');
-            log.code('  npx rajsatyam list');
+            log.code('  npx ui69 add button');
+            log.code('  npx ui69 add     # Interactive component selection');
+            log.code('  npx ui69 list');
             break;
     }
 }

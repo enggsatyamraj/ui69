@@ -1,10 +1,10 @@
 {
-    "name": "rajsatyam",
+    "name": "ui69",
     "version": "0.1.7",
     "description": "Unstyled, accessible UI components for React Native, inspired by shadcn/ui",
     "main": "index.js",
     "bin": {
-        "rajsatyam": "./cli/index.js"
+        "ui69": "./cli/index.js"
     },
     "files": [
         "cli/",
@@ -30,12 +30,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/enggsatyamraj/rajsatyam-packages.git"
+        "url": "git+https://github.com/enggsatyamraj/ui69-packages.git"
     },
     "bugs": {
-        "url": "https://github.com/enggsatyamraj/rajsatyam-packages/issues"
+        "url": "https://github.com/enggsatyamraj/ui69-packages/issues"
     },
-    "homepage": "https://github.com/enggsatyamraj/rajsatyam-packages#readme",
+    "homepage": "https://github.com/enggsatyamraj/ui69-packages#readme",
     "peerDependencies": {
         "react": ">=16.8.0",
         "react-native": ">=0.60.0"
