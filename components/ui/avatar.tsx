@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, StyleProp, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { View, Text, Image, StyleSheet, StyleProp, ViewStyle, TextStyle, ImageStyle, Pressable } from 'react-native';
 
 // Define avatarVariants
 const avatarVariants = {
@@ -314,18 +314,29 @@ export const Avatar = ({
         );
     };
 
+    // If onPress is provided, wrap with Pressable
+    const AvatarContent = () => (
+        <View
+            style={[styles.avatarContainer, containerStyle]}
+            accessibilityRole="image"
+            accessibilityLabel={alt || "Avatar"}
+        >
+            {renderContent()}
+        </View>
+    );
+
     return (
         <View
             style={[styles.container, style]}
             testID={testID}
         >
-            <View
-                style={[styles.avatarContainer, containerStyle]}
-                accessibilityRole="image"
-                accessibilityLabel={alt || "Avatar"}
-            >
-                {renderContent()}
-            </View>
+            {onPress ? (
+                <Pressable onPress={onPress}>
+                    <AvatarContent />
+                </Pressable>
+            ) : (
+                <AvatarContent />
+            )}
             {renderStatus()}
         </View>
     );
@@ -352,6 +363,12 @@ export interface AvatarGroupProps {
     countBorderColor?: string;
     countFontSize?: number;
     countFontWeight?: "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+
+    // Expandable feature
+    expandable?: boolean; // Whether the avatar group can expand to show all avatars
+    onExpandChange?: (isExpanded: boolean) => void; // Callback when expanded state changes
+    expandedSpacing?: number; // Spacing when expanded (can be different from collapsed)
+    initialExpanded?: boolean; // Whether the group is initially expanded
 }
 
 export const AvatarGroup = ({
@@ -367,14 +384,33 @@ export const AvatarGroup = ({
     countBorderColor = '#ffffff',
     countFontSize,
     countFontWeight = '600',
+    expandable = false,
+    onExpandChange,
+    expandedSpacing = -4,
+    initialExpanded = false,
 }: AvatarGroupProps) => {
-    const visibleAvatars = React.Children.toArray(children).slice(0, max);
-    const remainingCount = Math.max(0, React.Children.count(children) - max);
+    const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
+    const childrenArray = React.Children.toArray(children);
+    const totalAvatars = childrenArray.length;
+
+    // Determine which avatars to show based on expanded state
+    const visibleAvatars = isExpanded
+        ? childrenArray
+        : childrenArray.slice(0, max);
+
+    const remainingCount = Math.max(0, totalAvatars - max);
 
     // Get the size from the first avatar to maintain consistency
-    const firstAvatar = React.Children.toArray(children)[0] as React.ReactElement;
+    const firstAvatar = childrenArray[0] as React.ReactElement;
     // @ts-ignore
     const avatarSize = firstAvatar?.props?.size || 'md';
+
+    // Handle toggle expand
+    const handleToggleExpand = () => {
+        const newExpandedState = !isExpanded;
+        setIsExpanded(newExpandedState);
+        onExpandChange && onExpandChange(newExpandedState);
+    };
 
     return (
         <View style={[styles.group, style]}>
@@ -383,14 +419,14 @@ export const AvatarGroup = ({
                     key={index}
                     style={{
                         zIndex: visibleAvatars.length - index,
-                        marginLeft: index > 0 ? spacing : 0
+                        marginLeft: index > 0 ? (isExpanded ? expandedSpacing : spacing) : 0
                     }}
                 >
                     {child}
                 </View>
             ))}
 
-            {remainingCount > 0 && (
+            {!isExpanded && remainingCount > 0 && (
                 <View
                     style={[
                         {
@@ -399,19 +435,42 @@ export const AvatarGroup = ({
                         },
                     ]}
                 >
+                    <Pressable onPress={expandable ? handleToggleExpand : undefined}>
+                        <Avatar
+                            size={avatarSize}
+                            initials={`+${remainingCount}`}
+                            backgroundColor={countBackgroundColor}
+                            textColor={countTextColor}
+                            borderWidth={countBorderWidth}
+                            borderColor={countBorderColor}
+                            fontSize={countFontSize}
+                            fontWeight={countFontWeight}
+                            style={countStyle}
+                            textStyle={countTextStyle}
+                        />
+                    </Pressable>
+                </View>
+            )}
+
+            {isExpanded && expandable && (
+                <Pressable
+                    onPress={handleToggleExpand}
+                    style={[
+                        styles.collapseButton,
+                        {
+                            marginLeft: expandedSpacing,
+                        }
+                    ]}
+                >
                     <Avatar
                         size={avatarSize}
-                        initials={`+${remainingCount}`}
-                        backgroundColor={countBackgroundColor}
-                        textColor={countTextColor}
+                        initials="−" // Minus sign for collapse
+                        backgroundColor="#e2e8f0"
+                        textColor="#64748b"
                         borderWidth={countBorderWidth}
                         borderColor={countBorderColor}
-                        fontSize={countFontSize}
-                        fontWeight={countFontWeight}
-                        style={countStyle}
-                        textStyle={countTextStyle}
                     />
-                </View>
+                </Pressable>
             )}
         </View>
     );
@@ -459,6 +518,9 @@ const styles = StyleSheet.create({
     statusIndicator: {
         position: 'absolute',
         zIndex: 1,
+    },
+    collapseButton: {
+        zIndex: 0,
     },
 });
 
