@@ -90,14 +90,14 @@ function getComponentsConfig() {
                 }
             ]
         },
-        saperator: {
-            name: "Saperator",
-            description: "Saperator",
+        seperator: {
+            name: "Seperator",
+            description: "Seperator",
             dependencies: [],
             files: [
                 {
-                    src: path.join(COMPONENT_DIR, 'ui/saperator.tsx'),
-                    dest: 'components/ui/saperator.tsx',
+                    src: path.join(COMPONENT_DIR, 'ui/seperator.tsx'),
+                    dest: 'components/ui/seperator.tsx',
                 }
             ]
         }
