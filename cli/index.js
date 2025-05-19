@@ -100,6 +100,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/seperator.tsx',
                 }
             ]
+        },
+        card: {
+            name: "Card",
+            description: "Container component with default and warning variants, plus header, content and footer sections",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/card.tsx'),
+                    dest: 'components/ui/card.tsx',
+                }
+            ]
         }
     };
 }

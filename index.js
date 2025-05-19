@@ -7,4 +7,8 @@ module.exports = {
     Button: require('./components/ui/button/button').Button,
     Skeleton: require('./components/ui/skeleton').Skeleton,
     Seperator: require('./components/ui/seperator').Separator,
+    Card: require('./components/ui/card').Card,
+    CardHeader: require('./components/ui/card').CardHeader,
+    CardContent: require('./components/ui/card').CardContent,
+    CardFooter: require('./components/ui/card').CardFooter,
 };
