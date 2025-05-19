@@ -11,4 +11,6 @@ module.exports = {
     CardHeader: require('./components/ui/card').CardHeader,
     CardContent: require('./components/ui/card').CardContent,
     CardFooter: require('./components/ui/card').CardFooter,
+    Badge: require('./components/ui/badge').Badge,
+    DotBadge: require('./components/ui/badge').DotBadge,
 };

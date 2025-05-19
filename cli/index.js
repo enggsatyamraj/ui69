@@ -111,6 +111,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/card.tsx',
                 }
             ]
+        },
+        badge: {
+            name: "Badge",
+            description: "Small status indicator with multiple variants and dot style option",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/badge.tsx'),
+                    dest: 'components/ui/badge.tsx',
+                }
+            ]
         }
     };
 }
