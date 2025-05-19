@@ -89,6 +89,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/skeleton.tsx',
                 }
             ]
+        },
+        saperator: {
+            name: "Saperator",
+            description: "Saperator",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/saperator.tsx'),
+                    dest: 'components/ui/saperator.tsx',
+                }
+            ]
         }
     };
 }
