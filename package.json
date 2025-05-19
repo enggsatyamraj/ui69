@@ -1,6 +1,6 @@
 {
     "name": "ui69",
-    "version": "0.1.12",
+    "version": "0.1.13",
     "description": "Unstyled, accessible UI components for React Native, inspired by shadcn/ui",
     "main": "index.js",
     "bin": {
