@@ -122,6 +122,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/badge.tsx',
                 }
             ]
+        },
+        avatar: {
+            name: "Avatar",
+            description: "User profile image component with fallback, status indicators, and grouping support",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/avatar.tsx'),
+                    dest: 'components/ui/avatar.tsx',
+                }
+            ]
         }
     };
 }

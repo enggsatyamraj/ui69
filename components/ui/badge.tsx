@@ -80,6 +80,14 @@ export interface BadgeProps {
     borderWidth?: number; // Custom border width
     icon?: React.ReactNode; // Optional icon element
     iconPosition?: 'left' | 'right';
+
+    // Font styling
+    fontWeight?: "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900";
+    fontStyle?: "normal" | "italic";
+    fontFamily?: string;
+    fontSize?: number;
+    letterSpacing?: number;
+    textTransform?: "none" | "capitalize" | "uppercase" | "lowercase";
 }
 
 export const Badge = ({
@@ -94,6 +102,14 @@ export const Badge = ({
     borderWidth = 1,
     icon,
     iconPosition = 'left',
+
+    // Font styling props
+    fontWeight,
+    fontStyle,
+    fontFamily,
+    fontSize,
+    letterSpacing,
+    textTransform,
 }: BadgeProps) => {
     const variantStyle = badgeVariants.variant[variant];
     const sizeStyle = badgeVariants.size[size];
@@ -112,8 +128,12 @@ export const Badge = ({
     // Text style based on variant and size
     const textStyling = {
         color: textColor || variantStyle.textColor,
-        fontSize: sizeStyle.fontSize,
-        fontWeight: '500' as const,
+        fontSize: fontSize || sizeStyle.fontSize,
+        fontWeight: fontWeight || '500',
+        fontStyle: fontStyle,
+        fontFamily: fontFamily,
+        letterSpacing: letterSpacing,
+        textTransform: textTransform,
     };
 
     return (

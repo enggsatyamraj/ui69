@@ -13,4 +13,6 @@ module.exports = {
     CardFooter: require('./components/ui/card').CardFooter,
     Badge: require('./components/ui/badge').Badge,
     DotBadge: require('./components/ui/badge').DotBadge,
+    Avatar: require('./components/ui/avatar').Avatar,
+    AvatarGroup: require('./components/ui/avatar').AvatarGroup,
 };
