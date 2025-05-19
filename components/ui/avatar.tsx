@@ -1,5 +1,19 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, StyleProp, ViewStyle, TextStyle, ImageStyle, Pressable } from 'react-native';
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    StyleProp,
+    ViewStyle,
+    TextStyle,
+    ImageStyle,
+    Pressable,
+    Animated,
+    LayoutAnimation,
+    Platform,
+    UIManager
+} from 'react-native';
 
 // Define avatarVariants
 const avatarVariants = {
@@ -127,6 +141,7 @@ export interface AvatarProps {
     statusPosition?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
     statusBorderColor?: string;
     statusBorderWidth?: number;
+    statusBackgroundColor?: string; // New: Custom background color for status indicator
 
     // Other
     testID?: string;
@@ -175,6 +190,7 @@ export const Avatar = ({
     statusPosition = 'bottom-right',
     statusBorderColor = '#ffffff',
     statusBorderWidth = 2,
+    statusBackgroundColor,
 
     // Other
     testID,
@@ -303,7 +319,7 @@ export const Avatar = ({
                         width: currentStatusSize,
                         height: currentStatusSize,
                         borderRadius: currentStatusSize / 2,
-                        backgroundColor: statusVariant.backgroundColor,
+                        backgroundColor: statusBackgroundColor || statusVariant.backgroundColor,
                         borderColor: statusBorderColor,
                         borderWidth: statusBorderWidth,
                         ...statusPositioning[statusPosition],
@@ -369,6 +385,23 @@ export interface AvatarGroupProps {
     onExpandChange?: (isExpanded: boolean) => void; // Callback when expanded state changes
     expandedSpacing?: number; // Spacing when expanded (can be different from collapsed)
     initialExpanded?: boolean; // Whether the group is initially expanded
+
+    // Animation options
+    animationDuration?: number; // Duration of the animation in ms
+    useAnimation?: boolean; // Whether to use animation for expanding/collapsing
+    animationType?: 'spring' | 'timing'; // Type of animation to use
+
+    // Layout options
+    allowWrap?: boolean; // Allow avatars to wrap to multiple lines
+    maxWidth?: number; // Maximum width of the container before wrapping
+    rowSpacing?: number; // Spacing between rows when wrapping
+}
+
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android') {
+    if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
 }
 
 export const AvatarGroup = ({
@@ -388,25 +421,98 @@ export const AvatarGroup = ({
     onExpandChange,
     expandedSpacing = -4,
     initialExpanded = false,
+    animationDuration = 300,
+    useAnimation = true,
+    animationType = 'spring',
 }: AvatarGroupProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
     const childrenArray = React.Children.toArray(children);
     const totalAvatars = childrenArray.length;
 
-    // Determine which avatars to show based on expanded state
-    const visibleAvatars = isExpanded
-        ? childrenArray
-        : childrenArray.slice(0, max);
+    // Animation values
+    const animatedValues = React.useRef(
+        childrenArray.map(() => new Animated.Value(0))
+    ).current;
+    const opacityValues = React.useRef(
+        childrenArray.map(() => new Animated.Value(0))
+    ).current;
 
+    // Update animation values when children change
+    React.useEffect(() => {
+        if (animatedValues.length !== childrenArray.length) {
+            const newAnimatedValues = childrenArray.map((_, i) =>
+                i < animatedValues.length ? animatedValues[i] : new Animated.Value(0)
+            );
+
+            const newOpacityValues = childrenArray.map((_, i) =>
+                i < opacityValues.length ? opacityValues[i] : new Animated.Value(0)
+            );
+
+            animatedValues.splice(0, animatedValues.length, ...newAnimatedValues);
+            opacityValues.splice(0, opacityValues.length, ...newOpacityValues);
+        }
+    }, [childrenArray.length]);
+
+    // Determine which avatars to show based on expanded state
+    const visibleCount = isExpanded ? childrenArray.length : Math.min(max, childrenArray.length);
+    const visibleAvatars = childrenArray.slice(0, visibleCount);
     const remainingCount = Math.max(0, totalAvatars - max);
 
     // Get the size from the first avatar to maintain consistency
     const firstAvatar = childrenArray[0] as React.ReactElement;
-    // @ts-ignore
     const avatarSize = firstAvatar?.props?.size || 'md';
 
-    // Handle toggle expand
+    // Handle toggle expand with animation
     const handleToggleExpand = () => {
+        if (useAnimation) {
+            // Using LayoutAnimation for a smoother overall transition
+            LayoutAnimation.configureNext(
+                LayoutAnimation.create(
+                    animationDuration,
+                    LayoutAnimation.Types.easeInEaseOut,
+                    LayoutAnimation.Properties.opacity
+                )
+            );
+
+            // Animated entrance for each avatar
+            const animations = [];
+
+            if (!isExpanded) {
+                // Expanding: animate additional avatars into view
+                for (let i = max; i < childrenArray.length; i++) {
+                    // Reset values - start from left side (negative X value)
+                    // The further the avatar is in the list, the further left it starts
+                    const startPosition = -30 - ((i - max) * 10);
+                    animatedValues[i].setValue(startPosition);
+                    opacityValues[i].setValue(0);
+
+                    // Create animations
+                    const translateAnim = Animated[animationType](animatedValues[i], {
+                        toValue: 0,
+                        duration: animationDuration,
+                        useNativeDriver: true,
+                        tension: 120,
+                        friction: 8,
+                        delay: (i - max) * 50, // Staggered animation for each avatar
+                    });
+
+                    const opacityAnim = Animated.timing(opacityValues[i], {
+                        toValue: 1,
+                        duration: animationDuration * 0.6,
+                        useNativeDriver: true,
+                        delay: (i - max) * 50, // Match the delay with translate animation
+                    });
+
+                    animations.push(translateAnim);
+                    animations.push(opacityAnim);
+                }
+
+                // Start all animations
+                Animated.parallel(animations).start();
+            }
+        }
+
+        // Update state
         const newExpandedState = !isExpanded;
         setIsExpanded(newExpandedState);
         onExpandChange && onExpandChange(newExpandedState);
@@ -414,11 +520,12 @@ export const AvatarGroup = ({
 
     return (
         <View style={[styles.group, style]}>
-            {visibleAvatars.map((child, index) => (
+            {/* Visible avatars - always shown */}
+            {visibleAvatars.slice(0, max).map((child, index) => (
                 <View
-                    key={index}
+                    key={`avatar-${index}`}
                     style={{
-                        zIndex: visibleAvatars.length - index,
+                        zIndex: childrenArray.length - index,
                         marginLeft: index > 0 ? (isExpanded ? expandedSpacing : spacing) : 0
                     }}
                 >
@@ -426,6 +533,31 @@ export const AvatarGroup = ({
                 </View>
             ))}
 
+            {/* Additional avatars - shown when expanded */}
+            {isExpanded && childrenArray.slice(max).map((child, index) => {
+                const actualIndex = index + max;
+                return (
+                    <Animated.View
+                        key={`expanded-avatar-${actualIndex}`}
+                        style={[
+                            {
+                                zIndex: (childrenArray.length - actualIndex) * -1, // Negative to ensure proper stacking order
+                                marginLeft: expandedSpacing,
+                                opacity: useAnimation ? opacityValues[actualIndex] : 1,
+                                transform: [
+                                    {
+                                        translateX: useAnimation ? animatedValues[actualIndex] : 0
+                                    }
+                                ],
+                            }
+                        ]}
+                    >
+                        {child}
+                    </Animated.View>
+                );
+            })}
+
+            {/* Count Avatar - shown when collapsed and there are more avatars */}
             {!isExpanded && remainingCount > 0 && (
                 <View
                     style={[
@@ -452,6 +584,7 @@ export const AvatarGroup = ({
                 </View>
             )}
 
+            {/* Collapse Button - shown when expanded and collapsible */}
             {isExpanded && expandable && (
                 <Pressable
                     onPress={handleToggleExpand}
@@ -459,6 +592,7 @@ export const AvatarGroup = ({
                         styles.collapseButton,
                         {
                             marginLeft: expandedSpacing,
+                            zIndex: 0,
                         }
                     ]}
                 >
@@ -478,7 +612,16 @@ export const AvatarGroup = ({
 
 const styles = StyleSheet.create({
     container: {
-        position: 'relative', // For status indicator positioning
+        alignItems: 'flex-start', // Important for wrapping
+        flexDirection: 'column',
+    },
+    group: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     avatarContainer: {
         justifyContent: 'center',
@@ -510,10 +653,6 @@ const styles = StyleSheet.create({
         height: '60%',
         borderTopLeftRadius: 100,
         borderTopRightRadius: 100,
-    },
-    group: {
-        flexDirection: 'row',
-        alignItems: 'center',
     },
     statusIndicator: {
         position: 'absolute',
