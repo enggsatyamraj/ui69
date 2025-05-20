@@ -19,4 +19,9 @@ module.exports = {
     AccordionItem: require('./components/ui/accordion').AccordionItem,
     AccordionTrigger: require('./components/ui/accordion').AccordionTrigger,
     AccordionContent: require('./components/ui/accordion').AccordionContent,
+    InputOTP: require('./components/ui/input-otp').InputOTP,
+    InputOTPGroup: require('./components/ui/input-otp').InputOTPGroup,
+    InputOTPSeparator: require('./components/ui/input-otp').InputOTPSeparator,
+    InputOTPSlot: require('./components/ui/input-otp').InputOTPSlot,
+    PATTERNS: require('./components/ui/input-otp').PATTERNS,
 };

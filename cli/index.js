@@ -144,6 +144,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/accordion.tsx',
                 }
             ]
+        },
+        'input-otp': {
+            name: "InputOTP",
+            description: "One-time password input component with support for different input types and customization",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/input-otp.tsx'),
+                    dest: 'components/ui/input-otp.tsx',
+                }
+            ]
         }
     };
 }
