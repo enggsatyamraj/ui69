@@ -424,6 +424,9 @@ export const AvatarGroup = ({
     animationDuration = 300,
     useAnimation = true,
     animationType = 'spring',
+    allowWrap = false, // Whether to allow wrapping to next line
+    maxWidth, // Maximum width of the container before wrapping
+    rowSpacing = 8, // Spacing between rows when wrapping
 }: AvatarGroupProps) => {
     const [isExpanded, setIsExpanded] = React.useState(initialExpanded);
     const childrenArray = React.Children.toArray(children);
@@ -460,7 +463,10 @@ export const AvatarGroup = ({
 
     // Get the size from the first avatar to maintain consistency
     const firstAvatar = childrenArray[0] as React.ReactElement;
+    // @ts-ignore
     const avatarSize = firstAvatar?.props?.size || 'md';
+    // @ts-ignore
+    const avatarWidth = avatarVariants.size[avatarSize].width;
 
     // Handle toggle expand with animation
     const handleToggleExpand = () => {
@@ -518,98 +524,171 @@ export const AvatarGroup = ({
         onExpandChange && onExpandChange(newExpandedState);
     };
 
+    // Calculate effective spacing
+    const effectiveSpacing = isExpanded ? expandedSpacing : spacing;
+
+    // Function to create rows of avatars for wrapping
+    const createRows = () => {
+        if (!allowWrap) {
+            // If wrapping is not allowed, return a single row
+            return [visibleAvatars];
+        }
+
+        const rows = [];
+        // @ts-ignore
+        let currentRow = [];
+        let currentRowWidth = 0;
+
+        // Calculate the effective max width
+        const containerMaxWidth = maxWidth || 350; // Default fallback width if not specified
+
+        // Adjust for available space
+        const availableWidth = containerMaxWidth;
+
+        // Process each visible avatar
+        visibleAvatars.forEach((child, index) => {
+            // For the first item in a row, no spacing is applied
+            const itemSpacing = currentRow.length > 0 ? effectiveSpacing : 0;
+            const itemWidth = avatarWidth + itemSpacing;
+
+            // Check if adding this item would exceed the available width
+            if (currentRow.length > 0 && currentRowWidth + itemWidth > availableWidth) {
+                // This item starts a new row
+                // @ts-ignore
+                rows.push([...currentRow]);
+                currentRow = [child];
+                currentRowWidth = avatarWidth;
+            } else {
+                // Add to current row
+                currentRow.push(child);
+                currentRowWidth += itemWidth;
+            }
+        });
+
+        // Add the last row if it has items
+        if (currentRow.length > 0) {
+            // @ts-ignore
+            rows.push(currentRow);
+        }
+
+        return rows;
+    };
+
+    // Generate rows based on wrapping logic
+    const avatarRows = createRows();
+
     return (
-        <View style={[styles.group, style]}>
-            {/* Visible avatars - always shown */}
-            {visibleAvatars.slice(0, max).map((child, index) => (
+        <View style={[styles.container, style]}>
+            {avatarRows.map((row, rowIndex) => (
                 <View
-                    key={`avatar-${index}`}
-                    style={{
-                        zIndex: childrenArray.length - index,
-                        marginLeft: index > 0 ? (isExpanded ? expandedSpacing : spacing) : 0
-                    }}
+                    key={`row-${rowIndex}`}
+                    style={[
+                        styles.row,
+                        { marginTop: rowIndex > 0 ? rowSpacing : 0 }
+                    ]}
                 >
-                    {child}
+                    {/* Render avatars in this row */}
+                    {row.map((child, index) => {
+                        const actualIndex = rowIndex === 0
+                            ? index
+                            : avatarRows.slice(0, rowIndex).reduce((acc, r) => acc + r.length, 0) + index;
+
+                        // Determine if this is an additional avatar (shown when expanded)
+                        const isAdditionalAvatar = actualIndex >= max;
+
+                        // For expanded additional avatars
+                        if (isExpanded && isAdditionalAvatar) {
+                            return (
+                                <Animated.View
+                                    key={`expanded-avatar-${actualIndex}`}
+                                    style={[
+                                        {
+                                            zIndex: (childrenArray.length - actualIndex) * -1,
+                                            marginLeft: index > 0 ? effectiveSpacing : 0,
+                                            opacity: useAnimation ? opacityValues[actualIndex] : 1,
+                                            transform: [
+                                                {
+                                                    translateX: useAnimation ? animatedValues[actualIndex] : 0
+                                                }
+                                            ],
+                                        }
+                                    ]}
+                                >
+                                    {child}
+                                </Animated.View>
+                            );
+                        }
+
+                        // For regular avatars
+                        return (
+                            <View
+                                key={`avatar-${actualIndex}`}
+                                style={{
+                                    zIndex: childrenArray.length - actualIndex,
+                                    marginLeft: index > 0 ? effectiveSpacing : 0
+                                }}
+                            >
+                                {child}
+                            </View>
+                        );
+                    })}
+
+                    {/* Show count avatar at the end of the last visible row if needed */}
+                    {rowIndex === avatarRows.length - 1 && !isExpanded && remainingCount > 0 && (
+                        <View
+                            style={[
+                                {
+                                    zIndex: 0,
+                                    marginLeft: row.length > 0 ? effectiveSpacing : 0
+                                },
+                            ]}
+                        >
+                            <Pressable onPress={expandable ? handleToggleExpand : undefined}>
+                                <Avatar
+                                    size={avatarSize}
+                                    initials={`+${remainingCount}`}
+                                    backgroundColor={countBackgroundColor}
+                                    textColor={countTextColor}
+                                    borderWidth={countBorderWidth}
+                                    borderColor={countBorderColor}
+                                    fontSize={countFontSize}
+                                    fontWeight={countFontWeight}
+                                    style={countStyle}
+                                    textStyle={countTextStyle}
+                                />
+                            </Pressable>
+                        </View>
+                    )}
+
+                    {/* Show collapse button on the last row when expanded */}
+                    {rowIndex === avatarRows.length - 1 && isExpanded && expandable && (
+                        <Pressable
+                            onPress={handleToggleExpand}
+                            style={[
+                                styles.collapseButton,
+                                {
+                                    marginLeft: row.length > 0 ? effectiveSpacing : 0,
+                                    zIndex: 0,
+                                }
+                            ]}
+                        >
+                            <Avatar
+                                size={avatarSize}
+                                initials="−" // Minus sign for collapse
+                                backgroundColor="#e2e8f0"
+                                textColor="#64748b"
+                                borderWidth={countBorderWidth}
+                                borderColor={countBorderColor}
+                            />
+                        </Pressable>
+                    )}
                 </View>
             ))}
-
-            {/* Additional avatars - shown when expanded */}
-            {isExpanded && childrenArray.slice(max).map((child, index) => {
-                const actualIndex = index + max;
-                return (
-                    <Animated.View
-                        key={`expanded-avatar-${actualIndex}`}
-                        style={[
-                            {
-                                zIndex: (childrenArray.length - actualIndex) * -1, // Negative to ensure proper stacking order
-                                marginLeft: expandedSpacing,
-                                opacity: useAnimation ? opacityValues[actualIndex] : 1,
-                                transform: [
-                                    {
-                                        translateX: useAnimation ? animatedValues[actualIndex] : 0
-                                    }
-                                ],
-                            }
-                        ]}
-                    >
-                        {child}
-                    </Animated.View>
-                );
-            })}
-
-            {/* Count Avatar - shown when collapsed and there are more avatars */}
-            {!isExpanded && remainingCount > 0 && (
-                <View
-                    style={[
-                        {
-                            zIndex: 0,
-                            marginLeft: spacing
-                        },
-                    ]}
-                >
-                    <Pressable onPress={expandable ? handleToggleExpand : undefined}>
-                        <Avatar
-                            size={avatarSize}
-                            initials={`+${remainingCount}`}
-                            backgroundColor={countBackgroundColor}
-                            textColor={countTextColor}
-                            borderWidth={countBorderWidth}
-                            borderColor={countBorderColor}
-                            fontSize={countFontSize}
-                            fontWeight={countFontWeight}
-                            style={countStyle}
-                            textStyle={countTextStyle}
-                        />
-                    </Pressable>
-                </View>
-            )}
-
-            {/* Collapse Button - shown when expanded and collapsible */}
-            {isExpanded && expandable && (
-                <Pressable
-                    onPress={handleToggleExpand}
-                    style={[
-                        styles.collapseButton,
-                        {
-                            marginLeft: expandedSpacing,
-                            zIndex: 0,
-                        }
-                    ]}
-                >
-                    <Avatar
-                        size={avatarSize}
-                        initials="−" // Minus sign for collapse
-                        backgroundColor="#e2e8f0"
-                        textColor="#64748b"
-                        borderWidth={countBorderWidth}
-                        borderColor={countBorderColor}
-                    />
-                </Pressable>
-            )}
         </View>
     );
 };
 
+// Update styles to support wrapping
 const styles = StyleSheet.create({
     container: {
         alignItems: 'flex-start', // Important for wrapping
