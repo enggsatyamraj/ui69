@@ -15,4 +15,8 @@ module.exports = {
     DotBadge: require('./components/ui/badge').DotBadge,
     Avatar: require('./components/ui/avatar').Avatar,
     AvatarGroup: require('./components/ui/avatar').AvatarGroup,
+    Accordion: require('./components/ui/accordion').Accordion,
+    AccordionItem: require('./components/ui/accordion').AccordionItem,
+    AccordionTrigger: require('./components/ui/accordion').AccordionTrigger,
+    AccordionContent: require('./components/ui/accordion').AccordionContent,
 };

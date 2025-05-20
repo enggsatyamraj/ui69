@@ -39,6 +39,11 @@ npx ui69 list
 
 - Button - A pressable button component with multiple variants and sizes
 - Skeleton - Loading placeholder component with shimmer and wave animations
+- Avatar - User profile image with fallback, status indicators, and grouping support
+- Badge - Small status indicator with multiple variants and dot style option
+- Card - Container component with header, content and footer sections
+- Seperator - Simple divider component for separating content
+- Accordion - Collapsible content sections with customizable styling and animations
 - More components coming soon!
 
 ## Skeleton Component Example
@@ -84,6 +89,47 @@ export default function App() {
       />
     </View>
   );
+}
+```
+
+## Accordion Component Example
+
+```jsx
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+export function AccordionDemo() {
+  return (
+    
+      
+        Is it accessible?
+        
+          Yes. It adheres to the WAI-ARIA design pattern.
+        
+      
+      
+        Is it styled?
+        
+          
+            Yes. It comes with default styles that matches the other
+            components' aesthetic.
+          
+        
+      
+      
+        Is it animated?
+        
+          
+            Yes. It's animated by default, but you can disable it if you prefer.
+          
+        
+      
+    
+  )
 }
 ```
 

@@ -133,6 +133,17 @@ function getComponentsConfig() {
                     dest: 'components/ui/avatar.tsx',
                 }
             ]
+        },
+        accordion: {
+            name: "Accordion",
+            description: "Collapsible content sections with customizable styling and animations",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/accordion.tsx'),
+                    dest: 'components/ui/accordion.tsx',
+                }
+            ]
         }
     };
 }

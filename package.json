@@ -24,7 +24,8 @@
         "mobile",
         "expo",
         "react-native-components",
-        "ui-library"
+        "ui-library",
+        "accordion"
     ],
     "author": "Satyam Raj",
     "license": "MIT",
