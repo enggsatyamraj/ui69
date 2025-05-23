@@ -155,7 +155,18 @@ function getComponentsConfig() {
                     dest: 'components/ui/input-otp.tsx',
                 }
             ]
-        }
+        },
+        input: {
+            name: "Input",
+            description: "Text input component with multiple variants, validation, and icon support",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/input.tsx'),
+                    dest: 'components/ui/input.tsx',
+                }
+            ]
+        },
     };
 }
 

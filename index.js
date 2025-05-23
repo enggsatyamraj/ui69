@@ -5,6 +5,7 @@ module.exports = {
 
     // Export components for direct import if needed
     Button: require('./components/ui/button/button').Button,
+    Input: require('./components/ui/input').Input,
     Skeleton: require('./components/ui/skeleton').Skeleton,
     Seperator: require('./components/ui/seperator').Separator,
     Card: require('./components/ui/card').Card,
