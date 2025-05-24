@@ -4,7 +4,18 @@ module.exports = {
     version: require('./package.json').version,
 
     // Export components for direct import if needed
-    Button: require('./components/ui/button/button').Button,
+    Button: require('./components/ui/button').Button,
+
+    // Checkbox exports
+    Checkbox: require('./components/ui/checkbox').Checkbox,
+    CheckboxGroup: require('./components/ui/checkbox').CheckboxGroup,
+    checkboxVariants: require('./components/ui/checkbox').checkboxVariants,
+
+    // Switch exports
+    Switch: require('./components/ui/switch').Switch,
+    SwitchGroup: require('./components/ui/switch').SwitchGroup,
+    switchVariants: require('./components/ui/switch').switchVariants,
+
     Input: require('./components/ui/input').Input,
     Skeleton: require('./components/ui/skeleton').Skeleton,
     Seperator: require('./components/ui/seperator').Separator,
@@ -52,9 +63,4 @@ module.exports = {
     DrawerFooter: require('./components/ui/drawer').DrawerFooter,
     DrawerClose: require('./components/ui/drawer').DrawerClose,
     drawerVariants: require('./components/ui/drawer').drawerVariants,
-
-    // Checkbox exports
-    Checkbox: require('./components/ui/checkbox').Checkbox,
-    CheckboxGroup: require('./components/ui/checkbox').CheckboxGroup,
-    checkboxVariants: require('./components/ui/checkbox').checkboxVariants,
 };

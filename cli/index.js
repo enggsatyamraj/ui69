@@ -70,12 +70,34 @@ function getComponentsConfig() {
     return {
         button: {
             name: "Button",
-            description: "Button",
+            description: "Button component with multiple variants and sizes",
             dependencies: [],
             files: [
                 {
                     src: path.join(COMPONENT_DIR, 'ui/button.tsx'),
                     dest: 'components/ui/button.tsx',
+                }
+            ]
+        },
+        checkbox: {
+            name: "Checkbox",
+            description: "Checkbox input with multiple variants, group support, indeterminate state, and professional SVG icons",
+            dependencies: ['react-native-svg'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/checkbox.tsx'),
+                    dest: 'components/ui/checkbox.tsx',
+                }
+            ]
+        },
+        switch: {
+            name: "Switch",
+            description: "Toggle switch component with smooth animations, multiple variants, and group support",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/switch.tsx'),
+                    dest: 'components/ui/switch.tsx',
                 }
             ]
         },
@@ -92,7 +114,7 @@ function getComponentsConfig() {
         },
         seperator: {
             name: "Seperator",
-            description: "Seperator",
+            description: "Seperator component for dividing content",
             dependencies: [],
             files: [
                 {
@@ -200,17 +222,6 @@ function getComponentsConfig() {
                 }
             ]
         },
-        checkbox: {
-            name: "Checkbox",
-            description: "Checkbox input with multiple variants, group support, indeterminate state, and professional SVG icons",
-            dependencies: ['react-native-svg'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/checkbox.tsx'),
-                    dest: 'components/ui/checkbox.tsx',
-                }
-            ]
-        },
     };
 }
 
@@ -305,6 +316,21 @@ async function installComponent(component) {
         }
     }
 
+    // Show dependencies if any
+    if (config.dependencies && config.dependencies.length > 0) {
+        log.info(`\n${config.name} requires the following dependencies:`);
+        config.dependencies.forEach(dep => {
+            log.code(`  ${dep}`);
+        });
+
+        console.log('\nInstall them with:');
+        if (config.dependencies.includes('expo-linear-gradient')) {
+            log.code(`  npx expo install ${config.dependencies.join(' ')}`);
+        } else {
+            log.code(`  npm install ${config.dependencies.join(' ')}`);
+        }
+    }
+
     // Installation complete
     log.success(`\n${config.name} installed successfully!`);
 }
@@ -319,9 +345,14 @@ function listComponents() {
 
     Object.entries(components).forEach(([name, config]) => {
         console.log(`${colors.bold}${name}${colors.reset}`);
+        console.log(`  ${config.description}`);
+        if (config.dependencies && config.dependencies.length > 0) {
+            console.log(`  ${colors.gray}Dependencies: ${config.dependencies.join(', ')}${colors.reset}`);
+        }
+        console.log('');
     });
 
-    console.log('\nTo add a component:');
+    console.log('To add a component:');
     log.code('  npx ui69 add <component>');
     console.log('\nOr select from the interactive menu:');
     log.code('  npx ui69 add');
@@ -388,7 +419,8 @@ async function main() {
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
             console.log('\nExamples:');
-            log.code('  npx ui69 add button');
+            log.code('  npx ui69 add switch');
+            log.code('  npx ui69 add checkbox');
             log.code('  npx ui69 add     # Interactive component selection');
             log.code('  npx ui69 list');
             break;
