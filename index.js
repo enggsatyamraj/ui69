@@ -52,4 +52,9 @@ module.exports = {
     DrawerFooter: require('./components/ui/drawer').DrawerFooter,
     DrawerClose: require('./components/ui/drawer').DrawerClose,
     drawerVariants: require('./components/ui/drawer').drawerVariants,
+
+    // Checkbox exports
+    Checkbox: require('./components/ui/checkbox').Checkbox,
+    CheckboxGroup: require('./components/ui/checkbox').CheckboxGroup,
+    checkboxVariants: require('./components/ui/checkbox').checkboxVariants,
 };

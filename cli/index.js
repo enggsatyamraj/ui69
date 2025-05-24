@@ -200,6 +200,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        checkbox: {
+            name: "Checkbox",
+            description: "Checkbox input with multiple variants, group support, indeterminate state, and professional SVG icons",
+            dependencies: ['react-native-svg'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/checkbox.tsx'),
+                    dest: 'components/ui/checkbox.tsx',
+                }
+            ]
+        },
     };
 }
 
