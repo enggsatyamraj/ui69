@@ -11,6 +11,11 @@ module.exports = {
     CheckboxGroup: require('./components/ui/checkbox').CheckboxGroup,
     checkboxVariants: require('./components/ui/checkbox').checkboxVariants,
 
+    // Radio exports
+    Radio: require('./components/ui/radio').Radio,
+    RadioGroup: require('./components/ui/radio').RadioGroup,
+    radioVariants: require('./components/ui/radio').radioVariants,
+
     // Switch exports
     Switch: require('./components/ui/switch').Switch,
     SwitchGroup: require('./components/ui/switch').SwitchGroup,

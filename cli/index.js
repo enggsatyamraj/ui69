@@ -90,6 +90,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        radio: {
+            name: "Radio",
+            description: "Radio button component with group management, multiple variants, and single-selection logic",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/radio.tsx'),
+                    dest: 'components/ui/radio.tsx',
+                }
+            ]
+        },
         switch: {
             name: "Switch",
             description: "Toggle switch component with smooth animations, multiple variants, and group support",
@@ -419,6 +430,7 @@ async function main() {
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
             console.log('\nExamples:');
+            log.code('  npx ui69 add radio');
             log.code('  npx ui69 add switch');
             log.code('  npx ui69 add checkbox');
             log.code('  npx ui69 add     # Interactive component selection');
