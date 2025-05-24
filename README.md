@@ -50,7 +50,87 @@ npx ui69 list
 - **Input** - Text input component with multiple variants, validation, and icon support
 - **InputOTP** - One-time password input component with support for different input types
 - **Toast** - Notification component with animations, gestures, and multiple variants
+- **Select** - Dropdown select component with smooth animations and smart positioning
 - More components coming soon!
+
+## Select Component Example
+
+```jsx
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from './components/ui/select';
+
+export default function App() {
+    const [selectedValue, setSelectedValue] = useState('');
+
+    return (
+        <SafeAreaProvider>
+            <View style={{ padding: 20 }}>
+                {/* Basic Select */}
+                <Select value={selectedValue} onValueChange={setSelectedValue}>
+                    <SelectTrigger style={{ width: 200 }}>
+                        <SelectValue placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Fruits</SelectLabel>
+                            <SelectItem value="apple">Apple</SelectItem>
+                            <SelectItem value="banana">Banana</SelectItem>
+                            <SelectItem value="orange">Orange</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
+                {/* Uncontrolled Select with Default Value */}
+                <Select defaultValue="medium">
+                    <SelectTrigger style={{ width: 200, marginTop: 20 }}>
+                        <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="small">Small</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="large">Large</SelectItem>
+                    </SelectContent>
+                </Select>
+            </View>
+        </SafeAreaProvider>
+    );
+}
+```
+
+## Select Features
+
+- **Smart positioning**: Automatically positions dropdown to avoid screen edges
+- **Smooth animations**: Fade, scale, and slide animations for opening/closing
+- **Controlled/Uncontrolled**: Supports both controlled and uncontrolled usage patterns
+- **Groups and labels**: Organize options with visual groupings
+- **Disabled states**: Component and individual item disable support
+- **Touch optimized**: Designed for mobile touch interactions
+- **Accessible**: Proper accessibility roles and states
+- **Customizable styling**: Easy to customize appearance
+- **TypeScript**: Fully typed for better developer experience
+
+## Select Dependencies
+
+The Select component requires:
+
+```bash
+npm install react-native-safe-area-context
+```
+
+For Expo projects:
+```bash
+npx expo install react-native-safe-area-context
+```
 
 ## Toast Component Example
 
@@ -93,22 +173,6 @@ function ToastExample() {
         description: "Something went wrong" 
       })}>
         Show Error Toast
-      </Button>
-
-      <Button onPress={() => warning({ 
-        title: "Warning", 
-        description: "Please check your input",
-        action: { label: "Retry", onPress: () => console.log("Retry") }
-      })}>
-        Show Warning Toast
-      </Button>
-
-      <Button onPress={() => info({ 
-        title: "Info", 
-        description: "This is important information",
-        persistent: true // Won't auto-dismiss
-      })}>
-        Show Info Toast
       </Button>
     </View>
   );

@@ -178,6 +178,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        select: {
+            name: "Select",
+            description: "Select dropdown component with smooth animations and positioning",
+            dependencies: ['react-native-safe-area-context'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/select.tsx'),
+                    dest: 'components/ui/select.tsx',
+                }
+            ]
+        },
     };
 }
 

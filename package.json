@@ -31,7 +31,11 @@
         "toast",
         "notifications",
         "gestures",
-        "animations"
+        "animations",
+        "select",
+        "dropdown",
+        "picker",
+        "form-controls"
     ],
     "author": "Satyam Raj",
     "license": "MIT",

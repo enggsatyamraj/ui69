@@ -31,4 +31,14 @@ module.exports = {
     useToast: require('./components/ui/toast').useToast,
     useToastController: require('./components/ui/toast').useToastController,
     toastVariants: require('./components/ui/toast').toastVariants,
+
+    // Select exports
+    Select: require('./components/ui/select').Select,
+    SelectContent: require('./components/ui/select').SelectContent,
+    SelectGroup: require('./components/ui/select').SelectGroup,
+    SelectItem: require('./components/ui/select').SelectItem,
+    SelectLabel: require('./components/ui/select').SelectLabel,
+    SelectSeparator: require('./components/ui/select').SelectSeparator,
+    SelectTrigger: require('./components/ui/select').SelectTrigger,
+    SelectValue: require('./components/ui/select').SelectValue,
 };
