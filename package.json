@@ -1,6 +1,6 @@
 {
     "name": "ui69",
-    "version": "0.1.19",
+    "version": "0.2.0",
     "description": "Unstyled, accessible UI components for React Native, inspired by shadcn/ui",
     "main": "index.js",
     "bin": {
@@ -13,7 +13,9 @@
         "README.md"
     ],
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepublishOnly": "echo 'Publishing ui69...'",
+        "postpublish": "echo 'ui69 published successfully!'"
     },
     "keywords": [
         "react-native",
@@ -25,18 +27,22 @@
         "expo",
         "react-native-components",
         "ui-library",
-        "accordion"
+        "accordion",
+        "toast",
+        "notifications",
+        "gestures",
+        "animations"
     ],
     "author": "Satyam Raj",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/enggsatyamraj/ui69-packages.git"
+        "url": "git+https://github.com/enggsatyamraj/ui69.git"
     },
     "bugs": {
-        "url": "https://github.com/enggsatyamraj/ui69-packages/issues"
+        "url": "https://github.com/enggsatyamraj/ui69/issues"
     },
-    "homepage": "https://github.com/enggsatyamraj/ui69-packages#readme",
+    "homepage": "https://github.com/enggsatyamraj/ui69#readme",
     "peerDependencies": {
         "react": ">=16.8.0",
         "react-native": ">=0.60.0"

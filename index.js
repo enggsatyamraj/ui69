@@ -25,4 +25,10 @@ module.exports = {
     InputOTPSeparator: require('./components/ui/input-otp').InputOTPSeparator,
     InputOTPSlot: require('./components/ui/input-otp').InputOTPSlot,
     PATTERNS: require('./components/ui/input-otp').PATTERNS,
+
+    // Toast exports
+    ToastProvider: require('./components/ui/toast').ToastProvider,
+    useToast: require('./components/ui/toast').useToast,
+    useToastController: require('./components/ui/toast').useToastController,
+    toastVariants: require('./components/ui/toast').toastVariants,
 };

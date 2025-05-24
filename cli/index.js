@@ -167,6 +167,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        toast: {
+            name: "Toast",
+            description: "Toast notifications with animations, gestures, and multiple variants",
+            dependencies: ['react-native-reanimated', 'react-native-gesture-handler', 'react-native-safe-area-context'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/toast.tsx'),
+                    dest: 'components/ui/toast.tsx',
+                }
+            ]
+        },
     };
 }
 
