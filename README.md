@@ -124,13 +124,15 @@ export default function App() {
 The Select component requires:
 
 ```bash
-npm install react-native-safe-area-context
+npm install react-native-safe-area-context react-native-svg
 ```
 
 For Expo projects:
 ```bash
-npx expo install react-native-safe-area-context
+npx expo install react-native-safe-area-context react-native-svg
 ```
+
+For React Native CLI projects, you'll also need to complete the platform-specific installation for react-native-svg. See the [react-native-svg documentation](https://github.com/software-mansion/react-native-svg) for detailed setup instructions.
 
 ## Toast Component Example
 
