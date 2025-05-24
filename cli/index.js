@@ -189,6 +189,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        drawer: {
+            name: "Drawer",
+            description: "Customizable drawer/sheet component with gesture support and smooth animations",
+            dependencies: ['react-native-safe-area-context', 'react-native-gesture-handler'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/drawer.tsx'),
+                    dest: 'components/ui/drawer.tsx',
+                }
+            ]
+        },
     };
 }
 

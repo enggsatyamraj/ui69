@@ -37,7 +37,13 @@
         "picker",
         "form-controls",
         "svg-icons",
-        "smooth-animations"
+        "smooth-animations",
+        "drawer",
+        "sheet",
+        "modal",
+        "bottom-sheet",
+        "side-panel",
+        "swipe-gestures"
     ],
     "author": "Satyam Raj",
     "license": "MIT",
@@ -57,6 +63,7 @@
         "expo-linear-gradient": "^14.1.4",
         "fs-extra": "^10.1.0",
         "inquirer": "^8.2.6",
+        "react-native-gesture-handler": "^2.25.0",
         "react-native-reanimated": "^3.17.5",
         "react-native-safe-area-context": "^5.4.1",
         "react-native-svg": "^15.12.0"

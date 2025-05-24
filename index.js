@@ -41,4 +41,15 @@ module.exports = {
     SelectSeparator: require('./components/ui/select').SelectSeparator,
     SelectTrigger: require('./components/ui/select').SelectTrigger,
     SelectValue: require('./components/ui/select').SelectValue,
+
+    // Drawer exports
+    Drawer: require('./components/ui/drawer').Drawer,
+    DrawerTrigger: require('./components/ui/drawer').DrawerTrigger,
+    DrawerContent: require('./components/ui/drawer').DrawerContent,
+    DrawerHeader: require('./components/ui/drawer').DrawerHeader,
+    DrawerTitle: require('./components/ui/drawer').DrawerTitle,
+    DrawerDescription: require('./components/ui/drawer').DrawerDescription,
+    DrawerFooter: require('./components/ui/drawer').DrawerFooter,
+    DrawerClose: require('./components/ui/drawer').DrawerClose,
+    drawerVariants: require('./components/ui/drawer').drawerVariants,
 };
