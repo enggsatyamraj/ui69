@@ -52,12 +52,246 @@ const log = {
     muted: (text) => console.log(`${colors.gray}${text}${colors.reset}`)
 };
 
+// Theme configuration template
+const THEME_CONFIG_TEMPLATE = `// theme.config.ts
+/**
+ * UI69 Theme Configuration
+ * 
+ * Customize your app's colors and design tokens here.
+ * Just like shadcn/ui, you can easily change any value to match your brand.
+ * 
+ * 🎨 To change your theme:
+ * 1. Modify the colors below
+ * 2. Save the file
+ * 3. All components will automatically use your new colors!
+ */
+
+export interface LightTheme {
+    // Base colors
+    background: string;        // Main app background
+    foreground: string;        // Primary text color
+
+    // Component surfaces
+    card: string;              // Card backgrounds
+    cardForeground: string;    // Text on cards
+    popover: string;           // Dropdown/modal backgrounds
+    popoverForeground: string; // Text on dropdowns/modals
+
+    // Brand colors
+    primary: string;           // Primary buttons, links, focus states
+    primaryForeground: string; // Text on primary colored backgrounds
+    secondary: string;         // Secondary buttons and backgrounds
+    secondaryForeground: string; // Text on secondary backgrounds
+
+    // Utility colors
+    muted: string;             // Subtle backgrounds
+    mutedForeground: string;   // Subtle text (placeholders, descriptions)
+    accent: string;            // Accent backgrounds (highlights)
+    accentForeground: string;  // Text on accent backgrounds
+    destructive: string;       // Error/danger buttons and alerts
+    destructiveForeground: string; // Text on destructive backgrounds
+
+    // Interactive elements
+    border: string;            // Borders, dividers
+    input: string;             // Input field backgrounds
+    ring: string;              // Focus rings, selections
+}
+
+/**
+ * 🎨 CUSTOMIZE YOUR THEME HERE
+ * 
+ * These are the default colors - change them to match your brand!
+ * Colors should be in hex format (#000000) for React Native compatibility.
+ */
+export const lightTheme: LightTheme = {
+    // 🔹 Base colors - The foundation of your app
+    background: '#ffffff',        // Pure white background
+    foreground: '#0a0a0a',        // Almost black text
+
+    // 🔹 Surface colors - For cards, modals, etc.
+    card: '#ffffff',              // White card backgrounds
+    cardForeground: '#0a0a0a',    // Dark text on cards
+    popover: '#ffffff',           // White popover backgrounds
+    popoverForeground: '#0a0a0a', // Dark text on popovers
+
+    // 🔹 Brand colors - Make these match your brand!
+    primary: '#171717',           // 👈 CHANGE THIS to your brand color!
+    primaryForeground: '#fafafa', // Light text on dark primary
+    secondary: '#f5f5f5',         // Light gray for secondary elements
+    secondaryForeground: '#171717', // Dark text on light secondary
+
+    // 🔹 Utility colors - For subtle elements
+    muted: '#f5f5f5',             // Very light gray
+    mutedForeground: '#737373',   // Medium gray text
+    accent: '#f5f5f5',            // Same as secondary for consistency
+    accentForeground: '#171717',  // Dark text on accent
+    destructive: '#ef4444',       // Red for errors/delete actions
+    destructiveForeground: '#fafafa', // Light text on red
+
+    // 🔹 Interactive elements
+    border: '#e5e5e5',            // Light gray borders
+    input: '#e5e5e5',             // Light gray input backgrounds
+    ring: '#171717',              // Focus ring (usually matches primary)
+};
+
+/**
+ * 🔧 Design Tokens
+ * 
+ * These control the shape and spacing of your components
+ */
+export const radius = {
+    sm: 4,   // Small corners (tight, minimal)
+    md: 6,   // Medium corners (balanced - most common)
+    lg: 8,   // Large corners (soft, friendly)
+    xl: 12,  // Extra large corners (very rounded)
+};
+
+/**
+ * 📦 Export the current theme
+ * 
+ * This is what your components will use.
+ * You can also create multiple themes and switch between them.
+ */
+export const currentTheme = lightTheme;
+
+/**
+ * 🎨 QUICK THEME EXAMPLES
+ *
+ * Copy and paste one of these to quickly change your theme:
+ */
+
+// 🔵 Blue Theme
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   primary: '#3b82f6',           // Blue primary
+//   ring: '#3b82f6',              // Blue focus ring
+// };
+
+// 🟢 Green Theme  
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   primary: '#22c55e',           // Green primary
+//   ring: '#22c55e',              // Green focus ring
+// };
+
+// 🟣 Purple Theme
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   primary: '#8b5cf6',           // Purple primary
+//   ring: '#8b5cf6',              // Purple focus ring
+// };
+
+// 🟠 Orange Theme
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   primary: '#f97316',           // Orange primary
+//   ring: '#f97316',              // Orange focus ring
+// };
+
+// 🔴 Red Theme
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   primary: '#ef4444',           // Red primary
+//   ring: '#ef4444',              // Red focus ring
+// };
+
+/**
+ * 🎨 CUSTOM BRAND EXAMPLE
+ *
+ * Here's how to create a custom theme for your brand:
+ */
+
+// export const currentTheme: LightTheme = {
+//   ...lightTheme,
+//   
+//   // Your brand colors
+//   primary: '#your-brand-color',     // 👈 Put your brand color here
+//   ring: '#your-brand-color',        // Usually same as primary
+//   
+//   // Optional: customize other colors
+//   secondary: '#your-secondary-color',
+//   accent: '#your-accent-color',
+//   
+//   // Optional: customize surface colors
+//   background: '#fafafa',            // Slightly off-white
+//   card: '#ffffff',                  // Pure white cards
+// };
+
+/**
+ * 💡 PRO TIPS:
+ * 
+ * 1. Start by changing just the \`primary\` color - this will transform your app!
+ * 2. Make sure \`primaryForeground\` has good contrast with \`primary\`
+ * 3. Use online tools like coolors.co to generate color palettes
+ * 4. Test your colors with both light and dark text
+ * 5. Keep \`border\` and \`input\` subtle for a clean look
+ */
+`;
+
 // Ensure component directory exists
 function ensureComponentsExist() {
     if (!fs.existsSync(COMPONENT_DIR)) {
         log.error(`Components directory not found: ${COMPONENT_DIR}`);
         log.info(`Make sure the package is installed correctly and the components directory exists.`);
         log.info(`Current directory: ${__dirname}`);
+        process.exit(1);
+    }
+}
+
+// Initialize ui69 in the project
+async function initializeProject() {
+    showSplash();
+    log.title('Initializing ui69 in your project...');
+
+    const currentDir = process.cwd();
+    const themeConfigPath = path.join(currentDir, 'theme.config.ts');
+
+    // Check if theme.config.ts already exists
+    if (fs.existsSync(themeConfigPath)) {
+        log.warning('theme.config.ts already exists in your project.');
+
+        const response = await inquirer.prompt([
+            {
+                type: 'confirm',
+                name: 'overwrite',
+                message: 'Do you want to overwrite the existing theme.config.ts?',
+                default: false
+            }
+        ]);
+
+        if (!response.overwrite) {
+            log.info('Initialization cancelled. Your existing theme.config.ts was not modified.');
+            return;
+        }
+    }
+
+    try {
+        // Create theme.config.ts
+        await fs.writeFile(themeConfigPath, THEME_CONFIG_TEMPLATE);
+        log.success('Created theme.config.ts in your project root');
+
+        // Check if it's a TypeScript project and suggest tsconfig update
+        const tsconfigPath = path.join(currentDir, 'tsconfig.json');
+        if (fs.existsSync(tsconfigPath)) {
+            log.info('TypeScript project detected!');
+        }
+
+        // Success message
+        log.title('🎉 ui69 initialized successfully!');
+
+        console.log('Next steps:');
+        log.code('  1. Customize your theme in theme.config.ts');
+        log.code('  2. Add components: npx ui69 add button');
+        log.code('  3. Import and use: import { Button } from "./components/ui/button"');
+
+        console.log('\nQuick start:');
+        log.code('  npx ui69 add button');
+        log.code('  npx ui69 add input-otp');
+        log.code('  npx ui69 add drawer');
+
+    } catch (error) {
+        log.error('Failed to create theme.config.ts');
+        console.error(error);
         process.exit(1);
     }
 }
@@ -180,7 +414,7 @@ function getComponentsConfig() {
         },
         'input-otp': {
             name: "InputOTP",
-            description: "One-time password input component with support for different input types and customization",
+            description: "One-time password input component with support for different input types, patterns, and custom dimensions",
             dependencies: [],
             files: [
                 {
@@ -224,7 +458,7 @@ function getComponentsConfig() {
         },
         drawer: {
             name: "Drawer",
-            description: "Customizable drawer/sheet component with gesture support and smooth animations",
+            description: "Customizable drawer/sheet component with gesture support, smooth animations, and custom dimensions",
             dependencies: ['react-native-safe-area-context', 'react-native-gesture-handler'],
             files: [
                 {
@@ -292,6 +526,29 @@ async function installComponent(component) {
     const config = components[component];
 
     log.title(`Installing ${config.name} component`);
+
+    // Check if theme.config.ts exists
+    const themeConfigPath = path.join(process.cwd(), 'theme.config.ts');
+    if (!fs.existsSync(themeConfigPath)) {
+        log.warning('theme.config.ts not found in your project.');
+        log.info('UI69 components require theme.config.ts to work properly.');
+
+        const response = await inquirer.prompt([
+            {
+                type: 'confirm',
+                name: 'initFirst',
+                message: 'Would you like to run "npx ui69 init" first to set up the theme?',
+                default: true
+            }
+        ]);
+
+        if (response.initFirst) {
+            await initializeProject();
+            console.log(''); // Add some spacing
+        } else {
+            log.warning('Proceeding without theme.config.ts. Components may not work correctly.');
+        }
+    }
 
     // Create the necessary directories and copy the files
     for (const file of config.files) {
@@ -387,6 +644,10 @@ async function main() {
 
     // Handle different commands
     switch (command) {
+        case 'init':
+            await initializeProject();
+            break;
+
         case 'add':
             const componentName = args[1];
             if (!componentName) {
@@ -425,14 +686,16 @@ async function main() {
             log.title('ui69 CLI');
             console.log('A collection of unstyled, accessible UI components for React Native');
             console.log('\nCommands:');
+            console.log('  init               Initialize ui69 in your project (creates theme.config.ts)');
             console.log('  add [component]    Add a component to your project (interactive if no component specified)');
             console.log('  list               List all available components');
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
             console.log('\nExamples:');
-            log.code('  npx ui69 add radio');
-            log.code('  npx ui69 add switch');
-            log.code('  npx ui69 add checkbox');
+            log.code('  npx ui69 init');
+            log.code('  npx ui69 add button');
+            log.code('  npx ui69 add input-otp');
+            log.code('  npx ui69 add drawer');
             log.code('  npx ui69 add     # Interactive component selection');
             log.code('  npx ui69 list');
             break;
