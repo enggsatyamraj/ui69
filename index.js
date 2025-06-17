@@ -3,6 +3,19 @@ module.exports = {
     description: 'Unstyled, accessible UI components for React Native',
     version: require('./package.json').version,
 
+    // Alert exports
+    Alert: require('./components/ui/alert').Alert,
+    AlertTitle: require('./components/ui/alert').AlertTitle,
+    AlertDescription: require('./components/ui/alert').AlertDescription,
+    AlertIcon: require('./components/ui/alert').AlertIcon,
+    AlertContent: require('./components/ui/alert').AlertContent,
+    AlertActions: require('./components/ui/alert').AlertActions,
+    SuccessAlert: require('./components/ui/alert').SuccessAlert,
+    ErrorAlert: require('./components/ui/alert').ErrorAlert,
+    WarningAlert: require('./components/ui/alert').WarningAlert,
+    InfoAlert: require('./components/ui/alert').InfoAlert,
+    alertVariants: require('./components/ui/alert').alertVariants,
+
     // Export components for direct import if needed
     Button: require('./components/ui/button').Button,
 

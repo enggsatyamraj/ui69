@@ -302,6 +302,17 @@ function getComponentsConfig() {
     ensureComponentsExist();
 
     return {
+        alert: {
+            name: "Alert",
+            description: "Alert component with multiple variants, icons, titles, descriptions, and action support",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/alert.tsx'),
+                    dest: 'components/ui/alert.tsx',
+                }
+            ]
+        },
         button: {
             name: "Button",
             description: "Button component with multiple variants and sizes",
