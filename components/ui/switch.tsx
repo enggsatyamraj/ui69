@@ -1,56 +1,94 @@
-import React, { forwardRef, useState, useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    Pressable,
     Animated,
+    Pressable,
     StyleProp,
-    ViewStyle,
+    StyleSheet,
+    Text,
     TextStyle,
+    View,
+    ViewStyle,
 } from 'react-native';
+// Import our theme
+import { currentTheme } from '../../theme.config';
 
-// Switch variants configuration
+// Switch variants configuration using theme colors
 const switchVariants = {
     variant: {
         default: {
-            backgroundColor: '#e4e4e7',
-            thumbColor: '#ffffff',
-            checkedBackgroundColor: '#18181b',
-            checkedThumbColor: '#ffffff',
-            disabledBackgroundColor: '#f4f4f5',
-            disabledThumbColor: '#a1a1aa',
-            disabledCheckedBackgroundColor: '#a1a1aa',
-            textColor: '#09090b',
-            disabledTextColor: '#a1a1aa',
-            focusRingColor: '#18181b',
-            errorColor: '#ef4444',
+            backgroundColor: currentTheme.border,
+            thumbColor: currentTheme.background,
+            checkedBackgroundColor: currentTheme.primary,
+            checkedThumbColor: currentTheme.primaryForeground,
+            // IMPROVED: Better disabled state colors for clarity
+            disabledBackgroundColor: currentTheme.muted,           // Light gray for unchecked disabled
+            disabledThumbColor: currentTheme.background,           // White thumb for unchecked disabled
+            disabledCheckedBackgroundColor: currentTheme.mutedForeground, // Darker gray for checked disabled
+            disabledCheckedThumbColor: currentTheme.muted,         // Light gray thumb for checked disabled
+            textColor: currentTheme.foreground,
+            disabledTextColor: currentTheme.mutedForeground,
+            focusRingColor: currentTheme.ring,
+            errorColor: currentTheme.destructive,
         },
         destructive: {
-            backgroundColor: '#e4e4e7',
-            thumbColor: '#ffffff',
-            checkedBackgroundColor: '#ef4444',
-            checkedThumbColor: '#ffffff',
-            disabledBackgroundColor: '#f4f4f5',
-            disabledThumbColor: '#a1a1aa',
-            disabledCheckedBackgroundColor: '#a1a1aa',
-            textColor: '#09090b',
-            disabledTextColor: '#a1a1aa',
-            focusRingColor: '#ef4444',
-            errorColor: '#ef4444',
+            backgroundColor: currentTheme.border,
+            thumbColor: currentTheme.background,
+            checkedBackgroundColor: currentTheme.destructive,
+            checkedThumbColor: currentTheme.destructiveForeground,
+            // IMPROVED: Better disabled state colors
+            disabledBackgroundColor: currentTheme.muted,
+            disabledThumbColor: currentTheme.background,
+            disabledCheckedBackgroundColor: '#fca5a5',             // Light red for disabled checked destructive
+            disabledCheckedThumbColor: currentTheme.muted,
+            textColor: currentTheme.foreground,
+            disabledTextColor: currentTheme.mutedForeground,
+            focusRingColor: currentTheme.destructive,
+            errorColor: currentTheme.destructive,
         },
         success: {
-            backgroundColor: '#e4e4e7',
-            thumbColor: '#ffffff',
+            backgroundColor: currentTheme.border,
+            thumbColor: currentTheme.background,
             checkedBackgroundColor: '#22c55e',
             checkedThumbColor: '#ffffff',
-            disabledBackgroundColor: '#f4f4f5',
-            disabledThumbColor: '#a1a1aa',
-            disabledCheckedBackgroundColor: '#a1a1aa',
-            textColor: '#09090b',
-            disabledTextColor: '#a1a1aa',
+            // IMPROVED: Better disabled state colors
+            disabledBackgroundColor: currentTheme.muted,
+            disabledThumbColor: currentTheme.background,
+            disabledCheckedBackgroundColor: '#86efac',             // Light green for disabled checked success
+            disabledCheckedThumbColor: currentTheme.muted,
+            textColor: currentTheme.foreground,
+            disabledTextColor: currentTheme.mutedForeground,
             focusRingColor: '#22c55e',
-            errorColor: '#ef4444',
+            errorColor: currentTheme.destructive,
+        },
+        secondary: {
+            backgroundColor: currentTheme.border,
+            thumbColor: currentTheme.background,
+            checkedBackgroundColor: currentTheme.secondary,
+            checkedThumbColor: currentTheme.secondaryForeground,
+            // IMPROVED: Better disabled state colors
+            disabledBackgroundColor: currentTheme.muted,
+            disabledThumbColor: currentTheme.background,
+            disabledCheckedBackgroundColor: currentTheme.mutedForeground,
+            disabledCheckedThumbColor: currentTheme.muted,
+            textColor: currentTheme.foreground,
+            disabledTextColor: currentTheme.mutedForeground,
+            focusRingColor: currentTheme.secondary,
+            errorColor: currentTheme.destructive,
+        },
+        accent: {
+            backgroundColor: currentTheme.border,
+            thumbColor: currentTheme.background,
+            checkedBackgroundColor: currentTheme.accent,
+            checkedThumbColor: currentTheme.accentForeground,
+            // IMPROVED: Better disabled state colors
+            disabledBackgroundColor: currentTheme.muted,
+            disabledThumbColor: currentTheme.background,
+            disabledCheckedBackgroundColor: currentTheme.mutedForeground,
+            disabledCheckedThumbColor: currentTheme.muted,
+            textColor: currentTheme.foreground,
+            disabledTextColor: currentTheme.mutedForeground,
+            focusRingColor: currentTheme.accent,
+            errorColor: currentTheme.destructive,
         },
     },
     size: {
@@ -160,7 +198,7 @@ export const Switch = forwardRef<View, SwitchProps>(({
     const [internalChecked, setInternalChecked] = useState(defaultChecked);
     const [isFocused, setIsFocused] = useState(false);
 
-    // Animation values - using separate values to avoid conflicts
+    // Animation values
     const thumbAnimation = useRef(new Animated.Value(defaultChecked ? 1 : 0)).current;
     const scaleAnimation = useRef(new Animated.Value(1)).current;
 
@@ -182,9 +220,9 @@ export const Switch = forwardRef<View, SwitchProps>(({
         Animated.timing(thumbAnimation, {
             toValue: isChecked ? 1 : 0,
             duration: animationDuration,
-            useNativeDriver: true,
+            useNativeDriver: false, // Changed to false for translateX
         }).start();
-    }, [isChecked, enableAnimation, animationDuration]);
+    }, [isChecked, enableAnimation, animationDuration, thumbAnimation]);
 
     // Handle toggle
     const handleToggle = () => {
@@ -227,13 +265,16 @@ export const Switch = forwardRef<View, SwitchProps>(({
         onBlur?.();
     };
 
-    // Calculate thumb position
+    // Calculate thumb position - FIXED CALCULATION
     const thumbTranslateX = thumbAnimation.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, sizeStyle.width - sizeStyle.thumbSize - (sizeStyle.padding * 2)],
+        outputRange: [
+            sizeStyle.padding,
+            sizeStyle.width - sizeStyle.thumbSize - sizeStyle.padding
+        ],
     });
 
-    // Get colors based on state
+    // Get colors based on state - IMPROVED for better disabled states
     const getCurrentBackgroundColor = () => {
         if (disabled) {
             return isChecked
@@ -248,7 +289,10 @@ export const Switch = forwardRef<View, SwitchProps>(({
 
     const getCurrentThumbColor = () => {
         if (disabled) {
-            return variantStyle.disabledThumbColor;
+            // IMPROVED: Different thumb colors for disabled checked vs unchecked
+            return isChecked
+                ? variantStyle.disabledCheckedThumbColor
+                : variantStyle.disabledThumbColor;
         }
         if (isChecked) {
             return checkedThumbColor || variantStyle.checkedThumbColor;
@@ -281,7 +325,7 @@ export const Switch = forwardRef<View, SwitchProps>(({
                         ]}
                     >
                         {children || label}
-                        {required && <Text style={styles.required}> *</Text>}
+                        {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                     </Text>
                 )}
                 {description && (
@@ -289,7 +333,7 @@ export const Switch = forwardRef<View, SwitchProps>(({
                         style={[
                             styles.description,
                             {
-                                color: '#71717a',
+                                color: currentTheme.mutedForeground,
                                 fontSize: sizeStyle.fontSize - 1,
                             },
                             descriptionStyle,
@@ -336,7 +380,6 @@ export const Switch = forwardRef<View, SwitchProps>(({
                             width: sizeStyle.width,
                             height: sizeStyle.height,
                             borderRadius: sizeStyle.height / 2,
-                            padding: sizeStyle.padding,
                             backgroundColor: getCurrentBackgroundColor(),
                             borderWidth: isFocused ? 2 : 0,
                             borderColor: isFocused ? variantStyle.focusRingColor : 'transparent',
@@ -353,6 +396,8 @@ export const Switch = forwardRef<View, SwitchProps>(({
                                 height: sizeStyle.thumbSize,
                                 borderRadius: sizeStyle.thumbSize / 2,
                                 backgroundColor: getCurrentThumbColor(),
+                                // FIXED: Dynamic positioning based on actual sizes
+                                top: (sizeStyle.height - sizeStyle.thumbSize) / 2,
                                 transform: [{ translateX: thumbTranslateX }],
                             },
                             thumbStyle,
@@ -369,7 +414,7 @@ export const Switch = forwardRef<View, SwitchProps>(({
                     style={[
                         styles.helperText,
                         {
-                            color: isInvalid ? variantStyle.errorColor : '#71717a',
+                            color: isInvalid ? variantStyle.errorColor : currentTheme.mutedForeground,
                             fontSize: sizeStyle.fontSize - 2,
                             marginLeft: labelPosition === 'left' ? 0 : sizeStyle.width + sizeStyle.gap,
                         },
@@ -416,9 +461,9 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
     return (
         <View style={[styles.group, style]}>
             {label && (
-                <Text style={[styles.groupLabel, labelStyle]}>
+                <Text style={[styles.groupLabel, { color: currentTheme.foreground }, labelStyle]}>
                     {label}
-                    {required && <Text style={styles.required}> *</Text>}
+                    {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                 </Text>
             )}
 
@@ -448,7 +493,7 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
                     style={[
                         styles.helperText,
                         {
-                            color: isInvalid ? '#ef4444' : '#71717a',
+                            color: isInvalid ? currentTheme.destructive : currentTheme.mutedForeground,
                             fontSize: 12,
                         },
                     ]}
@@ -474,6 +519,8 @@ const styles = StyleSheet.create({
     },
     thumb: {
         position: 'absolute',
+        // REMOVED: Fixed marginTop that was causing issues
+        // marginTop: -10, // This was the problem!
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
@@ -492,7 +539,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     required: {
-        color: '#ef4444',
+        // color will be set dynamically using theme.destructive
     },
     helperText: {
         marginTop: 6,
@@ -504,7 +551,6 @@ const styles = StyleSheet.create({
     groupLabel: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#09090b',
         lineHeight: 20,
     },
     groupContainer: {

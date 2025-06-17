@@ -1,12 +1,14 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, ActivityIndicator, View } from 'react-native';
+import { currentTheme, radius } from '../../theme.config';
+// Import our theme directly - simple approach
 
-// Define variants similar to shadcn/ui but adapted for React Native
+// Define variants using theme colors instead of hardcoded values
 const buttonVariants = {
     variant: {
         default: {
-            backgroundColor: '#000', // primary
-            textColor: '#fff', // primary-foreground
+            backgroundColor: currentTheme.primary,           // Using theme.primary instead of '#000'
+            textColor: currentTheme.primaryForeground,       // Using theme.primaryForeground instead of '#fff'
             borderWidth: 0,
             borderColor: 'transparent',
             shadowOpacity: 0.1,
@@ -14,8 +16,8 @@ const buttonVariants = {
             shadowOffset: { width: 0, height: 1 },
         },
         destructive: {
-            backgroundColor: '#ef4444', // destructive
-            textColor: '#fff', // white
+            backgroundColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
+            textColor: currentTheme.destructiveForeground,   // Using theme.destructiveForeground instead of '#fff'
             borderWidth: 0,
             borderColor: 'transparent',
             shadowOpacity: 0.1,
@@ -23,17 +25,17 @@ const buttonVariants = {
             shadowOffset: { width: 0, height: 1 },
         },
         outline: {
-            backgroundColor: '#fff', // background
-            textColor: '#000', // text color  
+            backgroundColor: currentTheme.background,        // Using theme.background instead of '#fff'
+            textColor: currentTheme.foreground,              // Using theme.foreground instead of '#000'
             borderWidth: 1,
-            borderColor: '#e2e8f0', // border color - explicitly not red
+            borderColor: currentTheme.border,                // Using theme.border instead of '#e2e8f0'
             shadowOpacity: 0.1,
             shadowRadius: 2,
             shadowOffset: { width: 0, height: 1 },
         },
         secondary: {
-            backgroundColor: '#f1f5f9', // secondary
-            textColor: '#0f172a', // secondary-foreground
+            backgroundColor: currentTheme.secondary,         // Using theme.secondary instead of '#f1f5f9'
+            textColor: currentTheme.secondaryForeground,     // Using theme.secondaryForeground instead of '#0f172a'
             borderWidth: 0,
             borderColor: 'transparent',
             shadowOpacity: 0.1,
@@ -42,18 +44,18 @@ const buttonVariants = {
         },
         ghost: {
             backgroundColor: 'transparent',
-            textColor: '#0f172a', // text
+            textColor: currentTheme.foreground,              // Using theme.foreground instead of '#0f172a'
             borderWidth: 0,
             borderColor: 'transparent',
         },
         link: {
             backgroundColor: 'transparent',
-            textColor: '#2563eb', // primary for link
+            textColor: currentTheme.primary,                 // Using theme.primary instead of '#2563eb'
             borderWidth: 0,
             borderColor: 'transparent',
             textDecorationLine: 'underline',
             textDecorationStyle: 'solid',
-            textDecorationColor: '#2563eb',
+            textDecorationColor: currentTheme.primary,       // Using theme.primary instead of '#2563eb'
         },
     },
     size: {
@@ -61,7 +63,7 @@ const buttonVariants = {
             height: 36, // h-9 equivalent
             paddingHorizontal: 16, // px-4 equivalent
             paddingVertical: 8, // py-2 equivalent
-            borderRadius: 6, // rounded-md equivalent
+            borderRadius: radius.md, // Using theme radius instead of hardcoded 6
             iconPaddingHorizontal: 12, // has-[>svg]:px-3 equivalent
             fontSize: 14, // text-sm equivalent
             iconSize: 16, // Default icon size
@@ -70,7 +72,7 @@ const buttonVariants = {
             height: 32, // h-8 equivalent
             paddingHorizontal: 12, // px-3 equivalent
             paddingVertical: 6,
-            borderRadius: 6, // rounded-md equivalent
+            borderRadius: radius.md, // Using theme radius instead of hardcoded 6
             gap: 6, // gap-1.5 equivalent
             iconPaddingHorizontal: 10, // has-[>svg]:px-2.5 equivalent
             fontSize: 12, // smaller text
@@ -80,7 +82,7 @@ const buttonVariants = {
             height: 40, // h-10 equivalent
             paddingHorizontal: 24, // px-6 equivalent
             paddingVertical: 10,
-            borderRadius: 6, // rounded-md equivalent
+            borderRadius: radius.md, // Using theme radius instead of hardcoded 6
             iconPaddingHorizontal: 16, // has-[>svg]:px-4 equivalent
             fontSize: 16, // larger text
             iconSize: 18, // Larger icon size
@@ -88,7 +90,7 @@ const buttonVariants = {
         icon: {
             width: 36, // size-9 equivalent
             height: 36, // size-9 equivalent
-            borderRadius: 6, // rounded-md equivalent
+            borderRadius: radius.md, // Using theme radius instead of hardcoded 6
             padding: 0,
             fontSize: 14, // default text size
             iconSize: 16, // Default icon size
@@ -133,7 +135,9 @@ export const Button = ({
     const sizeStyle = buttonVariants.size[size];
 
     // Determine padding values
+    // @ts-ignore
     let paddingHorizontal = sizeStyle.paddingHorizontal;
+    // @ts-ignore
     let paddingVertical = sizeStyle.paddingVertical;
 
     // Override with custom padding if provided
@@ -161,14 +165,19 @@ export const Button = ({
         borderColor: variantStyle.borderColor || 'transparent', // Ensure border color is set or transparent
         height: isIconOnly ? sizeStyle.height : undefined, // Only set fixed height for icon-only buttons
         minHeight: !isIconOnly ? sizeStyle.height : undefined, // Use minHeight for text buttons to allow for multi-line text
+        // @ts-ignore
         width: isIconOnly ? sizeStyle.width : undefined, // Only set width for icon-only buttons
         borderRadius: sizeStyle.borderRadius,
         paddingHorizontal: isIconOnly ? 0 : paddingHorizontal,
         paddingVertical: isIconOnly ? 0 : paddingVertical,
+        // @ts-ignore
         shadowOpacity: variantStyle.shadowOpacity,
+        // @ts-ignore
         shadowRadius: variantStyle.shadowRadius,
+        // @ts-ignore
         shadowOffset: variantStyle.shadowOffset,
         shadowColor: '#000',
+        // @ts-ignore
         elevation: variantStyle.shadowOpacity ? 2 : 0, // Android shadow
         alignSelf: fullWidth ? 'stretch' : 'flex-start', // Full width if specified
     };
@@ -178,8 +187,11 @@ export const Button = ({
         color: variantStyle.textColor,
         fontWeight: '500',
         fontSize: fontSize || sizeStyle.fontSize, // Use custom fontSize if provided, otherwise use the size variant's fontSize
+        // @ts-ignore
         textDecorationLine: variantStyle.textDecorationLine,
+        // @ts-ignore
         textDecorationStyle: variantStyle.textDecorationStyle,
+        // @ts-ignore
         textDecorationColor: variantStyle.textDecorationColor,
     };
 
@@ -197,6 +209,7 @@ export const Button = ({
             activeOpacity={0.7} // Simulates hover effect
             style={[
                 styles.button,
+                // @ts-ignore
                 buttonStyle,
                 disabled && styles.disabled,
                 style,
@@ -212,6 +225,7 @@ export const Button = ({
             ) : (
                 <View style={[
                     styles.content,
+                    // @ts-ignore
                     { gap: sizeStyle.gap || 8 }
                 ]}>
                     {icon && (iconPosition === 'left' || isIconOnly) && (
@@ -224,6 +238,7 @@ export const Button = ({
                         <Text
                             style={[
                                 styles.text,
+                                // @ts-ignore
                                 textStyling,
                                 disabled && styles.disabledText,
                                 textStyle,

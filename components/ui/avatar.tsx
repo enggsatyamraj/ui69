@@ -14,8 +14,10 @@ import {
     Platform,
     UIManager
 } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// Define avatarVariants
+// Define avatarVariants using theme colors
 const avatarVariants = {
     size: {
         xs: {
@@ -57,46 +59,46 @@ const avatarVariants = {
     },
     variant: {
         default: {
-            backgroundColor: '#e2e8f0', // Light gray
-            textColor: '#64748b',      // Slate gray
+            backgroundColor: currentTheme.muted,               // Using theme.muted instead of '#e2e8f0'
+            textColor: currentTheme.mutedForeground,          // Using theme.mutedForeground instead of '#64748b'
             borderWidth: 0,
             borderColor: 'transparent',
         },
         primary: {
-            backgroundColor: '#eff6ff', // Light blue
-            textColor: '#3b82f6',      // Blue
+            backgroundColor: currentTheme.primary,             // Using theme.primary instead of '#eff6ff'
+            textColor: currentTheme.primaryForeground,        // Using theme.primaryForeground instead of '#3b82f6'
             borderWidth: 0,
             borderColor: 'transparent',
         },
         secondary: {
-            backgroundColor: '#f1f5f9', // Light slate
-            textColor: '#64748b',      // Slate gray
+            backgroundColor: currentTheme.secondary,           // Using theme.secondary instead of '#f1f5f9'
+            textColor: currentTheme.secondaryForeground,      // Using theme.secondaryForeground instead of '#64748b'
             borderWidth: 0,
             borderColor: 'transparent',
         },
         success: {
-            backgroundColor: '#ecfdf5', // Light green
-            textColor: '#10b981',      // Green
+            backgroundColor: '#ecfdf5',                        // Light green (keep as is, theme doesn't have success colors)
+            textColor: '#10b981',                              // Green (keep as is)
             borderWidth: 0,
             borderColor: 'transparent',
         },
         warning: {
-            backgroundColor: '#fffbeb', // Light amber
-            textColor: '#f59e0b',      // Amber
+            backgroundColor: '#fffbeb',                        // Light amber (keep as is)
+            textColor: '#f59e0b',                              // Amber (keep as is)
             borderWidth: 0,
             borderColor: 'transparent',
         },
         error: {
-            backgroundColor: '#fef2f2', // Light red
-            textColor: '#ef4444',      // Red
+            backgroundColor: '#fef2f2',                        // Light red (keep as is, close to destructive)
+            textColor: currentTheme.destructive,              // Using theme.destructive instead of '#ef4444'
             borderWidth: 0,
             borderColor: 'transparent',
         },
         outline: {
             backgroundColor: 'transparent',
-            textColor: '#64748b',      // Slate gray
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#64748b'
             borderWidth: 2,
-            borderColor: '#e2e8f0',    // Light gray border
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e2e8f0'
         },
     },
 };
@@ -188,7 +190,7 @@ export const Avatar = ({
     status = null,
     statusSize,
     statusPosition = 'bottom-right',
-    statusBorderColor = '#ffffff',
+    statusBorderColor = currentTheme.background,        // Using theme.background instead of '#ffffff'
     statusBorderWidth = 2,
     statusBackgroundColor,
 
@@ -411,10 +413,10 @@ export const AvatarGroup = ({
     style,
     countStyle,
     countTextStyle,
-    countBackgroundColor = '#e2e8f0',
-    countTextColor = '#64748b',
+    countBackgroundColor = currentTheme.muted,              // Using theme.muted instead of '#e2e8f0'
+    countTextColor = currentTheme.mutedForeground,          // Using theme.mutedForeground instead of '#64748b'
     countBorderWidth = 2,
-    countBorderColor = '#ffffff',
+    countBorderColor = currentTheme.background,             // Using theme.background instead of '#ffffff'
     countFontSize,
     countFontWeight = '600',
     expandable = false,
@@ -675,8 +677,8 @@ export const AvatarGroup = ({
                             <Avatar
                                 size={avatarSize}
                                 initials="−" // Minus sign for collapse
-                                backgroundColor="#e2e8f0"
-                                textColor="#64748b"
+                                backgroundColor={currentTheme.muted}           // Using theme.muted instead of '#e2e8f0'
+                                textColor={currentTheme.mutedForeground}      // Using theme.mutedForeground instead of '#64748b'
                                 borderWidth={countBorderWidth}
                                 borderColor={countBorderColor}
                             />

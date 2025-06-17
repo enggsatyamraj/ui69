@@ -1,29 +1,31 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    Pressable,
     Animated,
-    Modal,
+    BackHandler,
     Dimensions,
+    Modal,
     Platform,
+    Pressable,
+    ScrollView,
     StyleProp,
-    ViewStyle,
+    StyleSheet,
+    Text,
     TextStyle,
     TouchableWithoutFeedback,
-    ScrollView,
-    BackHandler,
+    View,
+    ViewStyle,
 } from 'react-native';
 import {
     PanGestureHandler,
     State,
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Define drawer variants
+// Define drawer variants using theme colors
 const drawerVariants = {
     side: {
         top: {
@@ -67,6 +69,8 @@ interface DrawerContextType {
     size: keyof typeof drawerVariants.size;
     onOpenChange?: (open: boolean) => void;
     dismissible: boolean;
+    customWidth?: number;
+    customHeight?: number;
 }
 
 interface DrawerContentContextType {
@@ -94,7 +98,7 @@ const useDrawerContent = () => {
     return context;
 };
 
-// Main Drawer component
+// Main Drawer component (Root)
 export interface DrawerProps {
     children: React.ReactNode;
     open?: boolean;
@@ -103,9 +107,11 @@ export interface DrawerProps {
     side?: keyof typeof drawerVariants.side;
     size?: keyof typeof drawerVariants.size;
     dismissible?: boolean;
+    customWidth?: number; // Custom width in pixels for left/right drawers
+    customHeight?: number; // Custom height in pixels for top/bottom drawers
 }
 
-export const Drawer: React.FC<DrawerProps> = ({
+export function Drawer({
     children,
     open: controlledOpen,
     defaultOpen = false,
@@ -113,7 +119,9 @@ export const Drawer: React.FC<DrawerProps> = ({
     side = 'bottom',
     size = 'md',
     dismissible = true,
-}) => {
+    customWidth,
+    customHeight,
+}: DrawerProps) {
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
 
     // Controlled vs uncontrolled handling
@@ -134,6 +142,8 @@ export const Drawer: React.FC<DrawerProps> = ({
         size,
         onOpenChange,
         dismissible,
+        customWidth,
+        customHeight,
     };
 
     return (
@@ -141,7 +151,7 @@ export const Drawer: React.FC<DrawerProps> = ({
             {children}
         </DrawerContext.Provider>
     );
-};
+}
 
 // DrawerTrigger component
 export interface DrawerTriggerProps {
@@ -150,11 +160,11 @@ export interface DrawerTriggerProps {
     style?: StyleProp<ViewStyle>;
 }
 
-export const DrawerTrigger: React.FC<DrawerTriggerProps> = ({
+export function DrawerTrigger({
     children,
     asChild = false,
     style,
-}) => {
+}: DrawerTriggerProps) {
     const { setIsOpen } = useDrawer();
 
     const handlePress = () => {
@@ -175,53 +185,91 @@ export const DrawerTrigger: React.FC<DrawerTriggerProps> = ({
             {children}
         </Pressable>
     );
-};
+}
 
-// DrawerContent component
+// DrawerPortal component - Using Modal for proper full-screen rendering
+export interface DrawerPortalProps {
+    children: React.ReactNode;
+}
+
+export function DrawerPortal({ children }: DrawerPortalProps) {
+    const { isOpen } = useDrawer();
+
+    return (
+        <Modal
+            transparent={true}
+            visible={isOpen}
+            animationType="none"
+            statusBarTranslucent={true}
+            onRequestClose={() => { }}
+        >
+            {children}
+        </Modal>
+    );
+}
+
+// DrawerOverlay component - Simple, no complex animations
+export interface DrawerOverlayProps {
+    style?: StyleProp<ViewStyle>;
+}
+
+export function DrawerOverlay({ style }: DrawerOverlayProps) {
+    const { isOpen, setIsOpen, dismissible } = useDrawer();
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(overlayOpacity, {
+            toValue: isOpen ? 1 : 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [isOpen]);
+
+    const handlePress = () => {
+        if (dismissible) {
+            setIsOpen(false); // Simple instant close
+        }
+    };
+
+    return (
+        <Animated.View
+            style={[
+                StyleSheet.absoluteFillObject,
+                {
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    opacity: overlayOpacity,
+                },
+                style,
+            ]}
+            pointerEvents={isOpen ? 'auto' : 'none'}
+        >
+            <TouchableWithoutFeedback onPress={handlePress}>
+                <View style={StyleSheet.absoluteFillObject} />
+            </TouchableWithoutFeedback>
+        </Animated.View>
+    );
+}
+
+// DrawerContent component - Simple version
 export interface DrawerContentProps {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
-    overlayStyle?: StyleProp<ViewStyle>;
 }
 
-export const DrawerContent: React.FC<DrawerContentProps> = ({
-    children,
-    style,
-    overlayStyle,
-}) => {
-    const { isOpen, setIsOpen, side, size, dismissible } = useDrawer();
+export function DrawerContent({ children, style }: DrawerContentProps) {
+    const { isOpen, setIsOpen, side, size, dismissible, customWidth, customHeight } = useDrawer();
     const insets = useSafeAreaInsets();
 
     // Animation values
     const translateAnim = useRef(new Animated.Value(drawerVariants.side[side].startValue)).current;
-    const overlayOpacity = useRef(new Animated.Value(0)).current;
     const gestureTranslateY = useRef(new Animated.Value(0)).current;
 
     // Gesture handling
-    const [dragOffset, setDragOffset] = useState(0);
     const isDragging = useRef(false);
 
-    // Function to handle smooth closing with animation
+    // Simple close function - no animation
     const handleClose = () => {
-        // First animate out, then call the state change
-        const variant = drawerVariants.side[side];
-
-        Animated.parallel([
-            Animated.timing(translateAnim, {
-                toValue: variant.startValue,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-            Animated.timing(overlayOpacity, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-        ]).start(() => {
-            // Reset gesture values after animation completes
-            gestureTranslateY.setValue(0);
-            setIsOpen(false);
-        });
+        setIsOpen(false); // Instant close
     };
 
     // Handle hardware back button on Android
@@ -229,7 +277,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
         if (Platform.OS === 'android' && isOpen) {
             const handleBackPress = () => {
                 if (dismissible) {
-                    handleClose(); // Use smooth close animation
+                    setIsOpen(false); // Instant close
                     return true;
                 }
                 return false;
@@ -240,45 +288,22 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
         }
     }, [isOpen, dismissible, setIsOpen]);
 
-    // Animation effects
+    // Animation effects for opening only
     useEffect(() => {
         if (isOpen) {
-            // Animate in with less bouncy spring
-            Animated.parallel([
-                Animated.spring(translateAnim, {
-                    toValue: drawerVariants.side[side].endValue,
-                    useNativeDriver: true,
-                    tension: 100, // Reduced from 120 for less bounce
-                    friction: 14,  // Increased from 10 for more damping
-                }),
-                Animated.timing(overlayOpacity, {
-                    toValue: 1,
-                    duration: 300, // Slightly longer for smoother feel
-                    useNativeDriver: true,
-                }),
-            ]).start();
+            // Animate in with spring animation
+            Animated.spring(translateAnim, {
+                toValue: drawerVariants.side[side].endValue,
+                useNativeDriver: true,
+                tension: 100,
+                friction: 14,
+            }).start();
         } else {
-            // Only animate out if we're not handling it manually
-            if (!isDragging.current) {
-                Animated.parallel([
-                    Animated.timing(translateAnim, {
-                        toValue: drawerVariants.side[side].startValue,
-                        duration: 250, // Slightly faster exit
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(overlayOpacity, {
-                        toValue: 0,
-                        duration: 250,
-                        useNativeDriver: true,
-                    }),
-                ]).start();
-            }
-
-            // Reset gesture values
+            // Instant reset to start position when closed
+            translateAnim.setValue(drawerVariants.side[side].startValue);
             gestureTranslateY.setValue(0);
-            setDragOffset(0);
         }
-    }, [isOpen, side, translateAnim, overlayOpacity]);
+    }, [isOpen, side, translateAnim]);
 
     // Handle pan gesture events
     const handleGestureEvent = Animated.event(
@@ -310,32 +335,14 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                 const shouldClose = translationY > 100 || velocityY > 1000;
 
                 if (shouldClose) {
-                    // Use the smooth close function instead of direct state change
-                    const variant = drawerVariants.side[side];
-                    isDragging.current = false;
-
-                    Animated.parallel([
-                        Animated.timing(translateAnim, {
-                            toValue: variant.startValue,
-                            duration: 250,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(overlayOpacity, {
-                            toValue: 0,
-                            duration: 250,
-                            useNativeDriver: true,
-                        }),
-                    ]).start(() => {
-                        gestureTranslateY.setValue(0);
-                        setIsOpen(false);
-                    });
+                    setIsOpen(false); // Instant close
                 } else {
-                    // Snap back to position with less bounce
+                    // Snap back to position with spring animation
                     Animated.spring(gestureTranslateY, {
                         toValue: 0,
                         useNativeDriver: true,
-                        tension: 100, // Less bouncy
-                        friction: 12,  // More damped
+                        tension: 100,
+                        friction: 12,
                     }).start();
                 }
             }
@@ -349,7 +356,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
 
         let drawerStyle: any = {
             position: 'absolute',
-            backgroundColor: '#ffffff',
+            backgroundColor: currentTheme.card,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.25,
@@ -360,39 +367,37 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
         // Calculate size based on side and size prop
         if (side === 'top' || side === 'bottom') {
             drawerStyle.width = SCREEN_WIDTH;
-            drawerStyle.height = SCREEN_HEIGHT * sizeValue;
+            // Use custom height if provided, otherwise use percentage of screen
+            drawerStyle.height = customHeight || (SCREEN_HEIGHT * sizeValue);
 
             if (side === 'top') {
                 drawerStyle.top = 0;
-                drawerStyle.borderBottomLeftRadius = 16;
-                drawerStyle.borderBottomRightRadius = 16;
-                // Add top safe area padding
+                drawerStyle.borderBottomLeftRadius = radius.lg;
+                drawerStyle.borderBottomRightRadius = radius.lg;
                 drawerStyle.paddingTop = insets.top;
             } else {
                 drawerStyle.bottom = 0;
-                drawerStyle.borderTopLeftRadius = 16;
-                drawerStyle.borderTopRightRadius = 16;
-                // Add bottom safe area padding
+                drawerStyle.borderTopLeftRadius = radius.lg;
+                drawerStyle.borderTopRightRadius = radius.lg;
                 drawerStyle.paddingBottom = insets.bottom;
             }
         } else {
             // For left/right drawers, account for safe area
             drawerStyle.height = SCREEN_HEIGHT;
-            drawerStyle.width = SCREEN_WIDTH * sizeValue;
+            // Use custom width if provided, otherwise use percentage of screen
+            drawerStyle.width = customWidth || (SCREEN_WIDTH * sizeValue);
 
             if (side === 'left') {
                 drawerStyle.left = 0;
-                drawerStyle.borderTopRightRadius = 16;
-                drawerStyle.borderBottomRightRadius = 16;
-                // Add left safe area padding and top/bottom insets
+                drawerStyle.borderTopRightRadius = radius.lg;
+                drawerStyle.borderBottomRightRadius = radius.lg;
                 drawerStyle.paddingLeft = insets.left;
                 drawerStyle.paddingTop = insets.top;
                 drawerStyle.paddingBottom = insets.bottom;
             } else {
                 drawerStyle.right = 0;
-                drawerStyle.borderTopLeftRadius = 16;
-                drawerStyle.borderBottomLeftRadius = 16;
-                // Add right safe area padding and top/bottom insets
+                drawerStyle.borderTopLeftRadius = radius.lg;
+                drawerStyle.borderBottomLeftRadius = radius.lg;
                 drawerStyle.paddingRight = insets.right;
                 drawerStyle.paddingTop = insets.top;
                 drawerStyle.paddingBottom = insets.bottom;
@@ -402,13 +407,6 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
         return drawerStyle;
     };
 
-    // Handle overlay press
-    const handleOverlayPress = () => {
-        if (dismissible && !isDragging.current) {
-            handleClose(); // Use smooth close animation
-        }
-    };
-
     if (!isOpen) return null;
 
     const drawerStyle = getDrawerStyle();
@@ -416,73 +414,50 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
 
     return (
         <DrawerContentContext.Provider value={{ handleClose }}>
-            <Modal
-                transparent
-                visible={isOpen}
-                animationType="none"
-                onRequestClose={() => dismissible && setIsOpen(false)}
+            <PanGestureHandler
+                onGestureEvent={handleGestureEvent}
+                onHandlerStateChange={handleStateChange}
+                enabled={dismissible && side === 'bottom'}
             >
-                {/* Overlay */}
                 <Animated.View
                     style={[
-                        styles.overlay,
+                        drawerStyle,
                         {
-                            opacity: overlayOpacity,
+                            transform: [
+                                {
+                                    [variant.translateProperty]: Animated.add(
+                                        translateAnim,
+                                        side === 'bottom' ? gestureTranslateY : 0
+                                    ),
+                                },
+                            ],
                         },
-                        overlayStyle,
+                        style,
                     ]}
                 >
-                    <TouchableWithoutFeedback onPress={handleOverlayPress}>
-                        <View style={StyleSheet.absoluteFillObject} />
-                    </TouchableWithoutFeedback>
-                </Animated.View>
-
-                {/* Drawer Content */}
-                <PanGestureHandler
-                    onGestureEvent={handleGestureEvent}
-                    onHandlerStateChange={handleStateChange}
-                    enabled={dismissible && side === 'bottom'} // Enable gesture only for bottom drawer for now
-                >
-                    <Animated.View
-                        style={[
-                            drawerStyle,
-                            {
-                                transform: [
-                                    {
-                                        [variant.translateProperty]: Animated.add(
-                                            translateAnim,
-                                            side === 'bottom' ? gestureTranslateY : 0
-                                        ),
-                                    },
-                                ],
-                            },
-                            style,
-                        ]}
-                    >
-                        {/* Drag Handle for bottom drawer */}
-                        {side === 'bottom' && dismissible && (
-                            <View style={styles.dragHandle}>
-                                <View style={styles.dragIndicator} />
-                            </View>
-                        )}
-
-                        <View style={styles.contentContainer}>
-                            <ScrollView
-                                style={styles.scrollContent}
-                                contentContainerStyle={styles.scrollContentContainer}
-                                showsVerticalScrollIndicator={false}
-                                bounces={false}
-                                scrollEnabled={!isDragging.current}
-                            >
-                                {children}
-                            </ScrollView>
+                    {/* Drag Handle for bottom drawer */}
+                    {side === 'bottom' && dismissible && (
+                        <View style={styles.dragHandle}>
+                            <View style={[styles.dragIndicator, { backgroundColor: currentTheme.border }]} />
                         </View>
-                    </Animated.View>
-                </PanGestureHandler>
-            </Modal>
+                    )}
+
+                    <View style={styles.contentContainer}>
+                        <ScrollView
+                            style={styles.scrollContent}
+                            contentContainerStyle={styles.scrollContentContainer}
+                            showsVerticalScrollIndicator={false}
+                            bounces={false}
+                            scrollEnabled={!isDragging.current}
+                        >
+                            {children}
+                        </ScrollView>
+                    </View>
+                </Animated.View>
+            </PanGestureHandler>
         </DrawerContentContext.Provider>
     );
-};
+}
 
 // DrawerHeader component
 export interface DrawerHeaderProps {
@@ -490,9 +465,9 @@ export interface DrawerHeaderProps {
     style?: StyleProp<ViewStyle>;
 }
 
-export const DrawerHeader: React.FC<DrawerHeaderProps> = ({ children, style }) => {
+export function DrawerHeader({ children, style }: DrawerHeaderProps) {
     return <View style={[styles.header, style]}>{children}</View>;
-};
+}
 
 // DrawerTitle component
 export interface DrawerTitleProps {
@@ -500,13 +475,13 @@ export interface DrawerTitleProps {
     style?: StyleProp<TextStyle>;
 }
 
-export const DrawerTitle: React.FC<DrawerTitleProps> = ({ children, style }) => {
+export function DrawerTitle({ children, style }: DrawerTitleProps) {
     return (
-        <Text style={[styles.title, style]} accessibilityRole="header">
+        <Text style={[styles.title, { color: currentTheme.foreground }, style]} accessibilityRole="header">
             {children}
         </Text>
     );
-};
+}
 
 // DrawerDescription component
 export interface DrawerDescriptionProps {
@@ -514,9 +489,9 @@ export interface DrawerDescriptionProps {
     style?: StyleProp<TextStyle>;
 }
 
-export const DrawerDescription: React.FC<DrawerDescriptionProps> = ({ children, style }) => {
-    return <Text style={[styles.description, style]}>{children}</Text>;
-};
+export function DrawerDescription({ children, style }: DrawerDescriptionProps) {
+    return <Text style={[styles.description, { color: currentTheme.mutedForeground }, style]}>{children}</Text>;
+}
 
 // DrawerFooter component
 export interface DrawerFooterProps {
@@ -524,9 +499,9 @@ export interface DrawerFooterProps {
     style?: StyleProp<ViewStyle>;
 }
 
-export const DrawerFooter: React.FC<DrawerFooterProps> = ({ children, style }) => {
-    return <View style={[styles.footer, style]}>{children}</View>;
-};
+export function DrawerFooter({ children, style }: DrawerFooterProps) {
+    return <View style={[styles.footer, { borderTopColor: currentTheme.border }, style]}>{children}</View>;
+}
 
 // DrawerClose component
 export interface DrawerCloseProps {
@@ -535,12 +510,8 @@ export interface DrawerCloseProps {
     style?: StyleProp<ViewStyle>;
 }
 
-export const DrawerClose: React.FC<DrawerCloseProps> = ({
-    children,
-    asChild = false,
-    style,
-}) => {
-    const { handleClose } = useDrawerContent(); // Use smooth close function from content context
+export function DrawerClose({ children, asChild = false, style }: DrawerCloseProps) {
+    const { handleClose } = useDrawerContent(); // Uses simple instant close
 
     if (asChild && React.isValidElement(children)) {
         return React.cloneElement(children, {
@@ -556,13 +527,9 @@ export const DrawerClose: React.FC<DrawerCloseProps> = ({
             {children}
         </Pressable>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
     dragHandle: {
         alignItems: 'center',
         paddingVertical: 8,
@@ -571,7 +538,6 @@ const styles = StyleSheet.create({
     dragIndicator: {
         width: 32,
         height: 4,
-        backgroundColor: '#d1d5db',
         borderRadius: 2,
     },
     contentContainer: {
@@ -591,13 +557,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#111827',
         marginBottom: 8,
         lineHeight: 24,
     },
     description: {
         fontSize: 14,
-        color: '#6b7280',
         lineHeight: 20,
     },
     footer: {
@@ -606,7 +570,6 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         gap: 12,
         borderTopWidth: 1,
-        borderTopColor: '#f3f4f6',
     },
 });
 

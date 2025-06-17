@@ -11,6 +11,8 @@ import {
     Platform,
 } from 'react-native';
 import Svg, { Path, Line } from 'react-native-svg';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
 // Professional Check Icon Component
 const CheckIcon = ({ size = 12, color = '#fafafa' }) => (
@@ -40,80 +42,93 @@ const MinusIcon = ({ size = 12, color = '#fafafa' }) => (
     </Svg>
 );
 
-// shadcn/ui exact color palette with variants
+// Checkbox variants using theme colors
 const checkboxVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff', // background
-            borderColor: '#e4e4e7', // border
-            checkedBackgroundColor: '#18181b', // primary
-            checkedBorderColor: '#18181b', // primary
-            checkColor: '#fafafa', // primary-foreground
-            textColor: '#09090b', // foreground
-            disabledBackgroundColor: '#fafafa', // muted
-            disabledBorderColor: '#e4e4e7', // border
-            disabledTextColor: '#a1a1aa', // muted-foreground
-            focusBorderColor: '#18181b', // ring
-            errorBorderColor: '#ef4444', // destructive
+            backgroundColor: currentTheme.background,          // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
+            checkedBackgroundColor: currentTheme.primary,     // Using theme.primary instead of '#18181b'
+            checkedBorderColor: currentTheme.primary,         // Using theme.primary instead of '#18181b'
+            checkColor: currentTheme.primaryForeground,       // Using theme.primaryForeground instead of '#fafafa'
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#09090b'
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted instead of '#fafafa'
+            disabledBorderColor: currentTheme.border,         // Using theme.border instead of '#e4e4e7'
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground instead of '#a1a1aa'
+            focusBorderColor: currentTheme.ring,              // Using theme.ring instead of '#18181b'
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
         },
         destructive: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e4e4e7',
-            checkedBackgroundColor: '#ef4444', // destructive
-            checkedBorderColor: '#ef4444',
-            checkColor: '#fef2f2', // destructive-foreground
-            textColor: '#09090b',
-            disabledBackgroundColor: '#fafafa',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            focusBorderColor: '#ef4444',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,          // Using theme.background
+            borderColor: currentTheme.border,                 // Using theme.border
+            checkedBackgroundColor: currentTheme.destructive, // Using theme.destructive instead of '#ef4444'
+            checkedBorderColor: currentTheme.destructive,     // Using theme.destructive
+            checkColor: currentTheme.destructiveForeground,   // Using theme.destructiveForeground instead of '#fef2f2'
+            textColor: currentTheme.foreground,               // Using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted
+            disabledBorderColor: currentTheme.border,         // Using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground
+            focusBorderColor: currentTheme.destructive,       // Using theme.destructive
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive
         },
         outline: {
             backgroundColor: 'transparent',
-            borderColor: '#e4e4e7',
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
             checkedBackgroundColor: 'transparent',
-            checkedBorderColor: '#18181b',
-            checkColor: '#18181b',
-            textColor: '#09090b',
+            checkedBorderColor: currentTheme.primary,         // Using theme.primary instead of '#18181b'
+            checkColor: currentTheme.primary,                 // Using theme.primary instead of '#18181b'
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#09090b'
             disabledBackgroundColor: 'transparent',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            focusBorderColor: '#18181b',
-            errorBorderColor: '#ef4444',
+            disabledBorderColor: currentTheme.border,         // Using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground
+            focusBorderColor: currentTheme.primary,           // Using theme.primary
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive
         },
         secondary: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e4e4e7',
-            checkedBackgroundColor: '#f4f4f5', // secondary
-            checkedBorderColor: '#e4e4e7',
-            checkColor: '#09090b', // secondary-foreground
-            textColor: '#09090b',
-            disabledBackgroundColor: '#fafafa',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            focusBorderColor: '#18181b',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,          // Using theme.background
+            borderColor: currentTheme.border,                 // Using theme.border
+            checkedBackgroundColor: currentTheme.secondary,   // Using theme.secondary instead of '#f4f4f5'
+            checkedBorderColor: currentTheme.border,          // Using theme.border
+            checkColor: currentTheme.secondaryForeground,     // Using theme.secondaryForeground instead of '#09090b'
+            textColor: currentTheme.foreground,               // Using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted
+            disabledBorderColor: currentTheme.border,         // Using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground
+            focusBorderColor: currentTheme.ring,              // Using theme.ring
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive
         },
         success: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e4e4e7',
-            checkedBackgroundColor: '#22c55e', // green-500
-            checkedBorderColor: '#22c55e',
-            checkColor: '#ffffff',
-            textColor: '#09090b',
-            disabledBackgroundColor: '#fafafa',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            focusBorderColor: '#22c55e',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,          // Using theme.background
+            borderColor: currentTheme.border,                 // Using theme.border
+            checkedBackgroundColor: '#22c55e',                // Keep green (theme doesn't have success)
+            checkedBorderColor: '#22c55e',                    // Keep green
+            checkColor: '#ffffff',                            // White check
+            textColor: currentTheme.foreground,               // Using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted
+            disabledBorderColor: currentTheme.border,         // Using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground
+            focusBorderColor: '#22c55e',                      // Green focus
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive
+        },
+        accent: {
+            backgroundColor: currentTheme.background,          // New: using theme.background
+            borderColor: currentTheme.border,                 // New: using theme.border
+            checkedBackgroundColor: currentTheme.accent,      // New: using theme.accent
+            checkedBorderColor: currentTheme.accent,          // New: using theme.accent
+            checkColor: currentTheme.accentForeground,        // New: using theme.accentForeground
+            textColor: currentTheme.foreground,               // New: using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // New: using theme.muted
+            disabledBorderColor: currentTheme.border,         // New: using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // New: using theme.mutedForeground
+            focusBorderColor: currentTheme.accent,            // New: using theme.accent
+            errorBorderColor: currentTheme.destructive,       // New: using theme.destructive
         },
     },
     size: {
         sm: {
             width: 16,
             height: 16,
-            borderRadius: 4,
+            borderRadius: radius.sm,                          // Using theme radius instead of hardcoded 4
             borderWidth: 1,
             fontSize: 14,
             checkSize: 10,
@@ -122,7 +137,7 @@ const checkboxVariants = {
         md: {
             width: 20,
             height: 20,
-            borderRadius: 6,
+            borderRadius: radius.md,                          // Using theme radius instead of hardcoded 6
             borderWidth: 2,
             fontSize: 14,
             checkSize: 12,
@@ -131,7 +146,7 @@ const checkboxVariants = {
         lg: {
             width: 24,
             height: 24,
-            borderRadius: 8,
+            borderRadius: radius.lg,                          // Using theme radius instead of hardcoded 8
             borderWidth: 2,
             fontSize: 16,
             checkSize: 14,
@@ -498,7 +513,7 @@ export const Checkbox = forwardRef<View, CheckboxProps>(({
                         ]}
                     >
                         {children || label}
-                        {required && <Text style={styles.required}> *</Text>}
+                        {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                     </Text>
                 )}
                 {description && (
@@ -506,7 +521,7 @@ export const Checkbox = forwardRef<View, CheckboxProps>(({
                         style={[
                             styles.description,
                             {
-                                color: '#71717a', // muted-foreground
+                                color: currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#71717a'
                                 fontSize: sizeStyle.fontSize - 1,
                             },
                             descriptionStyle,
@@ -579,8 +594,8 @@ export const Checkbox = forwardRef<View, CheckboxProps>(({
                         styles.helperText,
                         {
                             color: isInvalid
-                                ? '#ef4444' // destructive
-                                : '#71717a', // muted-foreground
+                                ? currentTheme.destructive // Using theme.destructive instead of '#ef4444'
+                                : currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#71717a'
                             fontSize: sizeStyle.fontSize - 2,
                             marginLeft: labelPosition === 'left' ? 0 : sizeStyle.width + sizeStyle.gap,
                         },
@@ -654,9 +669,9 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
     return (
         <View style={[styles.group, style]}>
             {label && (
-                <Text style={[styles.groupLabel, labelStyle]}>
+                <Text style={[styles.groupLabel, { color: currentTheme.foreground }, labelStyle]}>
                     {label}
-                    {required && <Text style={styles.required}> *</Text>}
+                    {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                 </Text>
             )}
 
@@ -696,7 +711,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
                     style={[
                         styles.helperText,
                         {
-                            color: isInvalid ? '#ef4444' : '#71717a', // destructive : muted-foreground
+                            color: isInvalid ? currentTheme.destructive : currentTheme.mutedForeground, // Using theme colors
                             fontSize: 12,
                         },
                     ]}
@@ -745,7 +760,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     required: {
-        color: '#ef4444', // destructive
+        // color will be set dynamically using theme.destructive
     },
     helperText: {
         marginTop: 6, // space-y-1.5
@@ -757,7 +772,6 @@ const styles = StyleSheet.create({
     groupLabel: {
         fontSize: 16, // text-base
         fontWeight: '600', // font-semibold
-        color: '#09090b', // foreground
         lineHeight: 20,
     },
     groupContainer: {

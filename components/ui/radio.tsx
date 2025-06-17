@@ -9,48 +9,76 @@ import {
     ViewStyle,
     TextStyle,
 } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// shadcn/ui exact color palette for Radio
+// Radio variants using theme colors instead of hardcoded values
 const radioVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff', // background
-            borderColor: '#e4e4e7', // border (zinc-200)
-            checkedBorderColor: '#18181b', // primary (zinc-900)
-            indicatorColor: '#18181b', // primary
-            textColor: '#09090b', // foreground
-            disabledBackgroundColor: '#fafafa', // muted
-            disabledBorderColor: '#e4e4e7', // border
-            disabledTextColor: '#a1a1aa', // muted-foreground
-            disabledIndicatorColor: '#a1a1aa',
-            focusBorderColor: '#18181b', // ring
-            errorBorderColor: '#ef4444', // destructive
+            backgroundColor: currentTheme.background,          // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
+            checkedBorderColor: currentTheme.primary,         // Using theme.primary instead of '#18181b'
+            indicatorColor: currentTheme.primary,             // Using theme.primary instead of '#18181b'
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#09090b'
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted instead of '#fafafa'
+            disabledBorderColor: currentTheme.border,         // Using theme.border instead of '#e4e4e7'
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground instead of '#a1a1aa'
+            disabledIndicatorColor: currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#a1a1aa'
+            focusBorderColor: currentTheme.ring,              // Using theme.ring instead of '#18181b'
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
         },
         destructive: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e4e4e7',
-            checkedBorderColor: '#ef4444', // destructive
-            indicatorColor: '#ef4444',
-            textColor: '#09090b',
-            disabledBackgroundColor: '#fafafa',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            disabledIndicatorColor: '#a1a1aa',
-            focusBorderColor: '#ef4444',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,          // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
+            checkedBorderColor: currentTheme.destructive,     // Using theme.destructive instead of '#ef4444'
+            indicatorColor: currentTheme.destructive,         // Using theme.destructive instead of '#ef4444'
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#09090b'
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted instead of '#fafafa'
+            disabledBorderColor: currentTheme.border,         // Using theme.border instead of '#e4e4e7'
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground instead of '#a1a1aa'
+            disabledIndicatorColor: currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#a1a1aa'
+            focusBorderColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
         },
         success: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e4e4e7',
-            checkedBorderColor: '#22c55e', // green-500
-            indicatorColor: '#22c55e',
-            textColor: '#09090b',
-            disabledBackgroundColor: '#fafafa',
-            disabledBorderColor: '#e4e4e7',
-            disabledTextColor: '#a1a1aa',
-            disabledIndicatorColor: '#a1a1aa',
-            focusBorderColor: '#22c55e',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,          // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
+            checkedBorderColor: '#22c55e',                    // Keep green (theme doesn't have success colors)
+            indicatorColor: '#22c55e',                        // Keep green
+            textColor: currentTheme.foreground,               // Using theme.foreground instead of '#09090b'
+            disabledBackgroundColor: currentTheme.muted,      // Using theme.muted instead of '#fafafa'
+            disabledBorderColor: currentTheme.border,         // Using theme.border instead of '#e4e4e7'
+            disabledTextColor: currentTheme.mutedForeground,  // Using theme.mutedForeground instead of '#a1a1aa'
+            disabledIndicatorColor: currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#a1a1aa'
+            focusBorderColor: '#22c55e',                      // Keep green focus
+            errorBorderColor: currentTheme.destructive,       // Using theme.destructive instead of '#ef4444'
+        },
+        secondary: {
+            backgroundColor: currentTheme.background,          // New: using theme.background
+            borderColor: currentTheme.border,                 // New: using theme.border
+            checkedBorderColor: currentTheme.secondary,       // New: using theme.secondary
+            indicatorColor: currentTheme.secondaryForeground, // New: using theme.secondaryForeground
+            textColor: currentTheme.foreground,               // New: using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // New: using theme.muted
+            disabledBorderColor: currentTheme.border,         // New: using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // New: using theme.mutedForeground
+            disabledIndicatorColor: currentTheme.mutedForeground, // New: using theme.mutedForeground
+            focusBorderColor: currentTheme.secondary,         // New: using theme.secondary
+            errorBorderColor: currentTheme.destructive,       // New: using theme.destructive
+        },
+        accent: {
+            backgroundColor: currentTheme.background,          // New: using theme.background
+            borderColor: currentTheme.border,                 // New: using theme.border
+            checkedBorderColor: currentTheme.accent,          // New: using theme.accent
+            indicatorColor: currentTheme.accentForeground,    // New: using theme.accentForeground
+            textColor: currentTheme.foreground,               // New: using theme.foreground
+            disabledBackgroundColor: currentTheme.muted,      // New: using theme.muted
+            disabledBorderColor: currentTheme.border,         // New: using theme.border
+            disabledTextColor: currentTheme.mutedForeground,  // New: using theme.mutedForeground
+            disabledIndicatorColor: currentTheme.mutedForeground, // New: using theme.mutedForeground
+            focusBorderColor: currentTheme.accent,            // New: using theme.accent
+            errorBorderColor: currentTheme.destructive,       // New: using theme.destructive
         },
     },
     size: {
@@ -369,7 +397,7 @@ export const Radio = forwardRef<View, RadioProps>(({
                         ]}
                     >
                         {children || label}
-                        {required && <Text style={styles.required}> *</Text>}
+                        {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                     </Text>
                 )}
                 {description && (
@@ -377,7 +405,7 @@ export const Radio = forwardRef<View, RadioProps>(({
                         style={[
                             styles.description,
                             {
-                                color: '#71717a', // muted-foreground
+                                color: currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#71717a'
                                 fontSize: sizeStyle.fontSize - 1,
                             },
                             descriptionStyle,
@@ -450,7 +478,7 @@ export const Radio = forwardRef<View, RadioProps>(({
                         {
                             color: effectiveIsInvalid
                                 ? variantStyle.errorBorderColor
-                                : '#71717a', // muted-foreground
+                                : currentTheme.mutedForeground, // Using theme.mutedForeground instead of '#71717a'
                             fontSize: sizeStyle.fontSize - 2,
                             marginLeft: labelPosition === 'left' ? 0 : sizeStyle.width + sizeStyle.gap,
                         },
@@ -529,9 +557,9 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
         <RadioGroupContext.Provider value={contextValue}>
             <View style={[styles.group, style]}>
                 {label && (
-                    <Text style={[styles.groupLabel, labelStyle]}>
+                    <Text style={[styles.groupLabel, { color: currentTheme.foreground }, labelStyle]}>
                         {label}
-                        {required && <Text style={styles.required}> *</Text>}
+                        {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                     </Text>
                 )}
 
@@ -553,7 +581,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
                         style={[
                             styles.helperText,
                             {
-                                color: isInvalid ? '#ef4444' : '#71717a', // destructive : muted-foreground
+                                color: isInvalid ? currentTheme.destructive : currentTheme.mutedForeground, // Using theme colors
                                 fontSize: 12,
                             },
                         ]}
@@ -594,7 +622,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     required: {
-        color: '#ef4444', // destructive
+        // color will be set dynamically using theme.destructive
     },
     helperText: {
         marginTop: 6,
@@ -606,7 +634,6 @@ const styles = StyleSheet.create({
     groupLabel: {
         fontSize: 16,
         fontWeight: '600', // font-semibold
-        color: '#09090b', // foreground
         lineHeight: 20,
     },
     groupContainer: {

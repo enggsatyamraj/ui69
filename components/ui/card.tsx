@@ -1,31 +1,73 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ViewStyle, StyleProp, TouchableOpacity, Pressable } from 'react-native';
+import { View, StyleSheet, ViewStyle, StyleProp, Pressable } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// Define variants for the Card component
+// Define variants for the Card component using theme colors
 const cardVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff', // White
-            borderColor: '#e2e8f0', // Light gray border
+            backgroundColor: currentTheme.card,           // Using theme.card instead of '#ffffff'
+            borderColor: currentTheme.border,            // Using theme.border instead of '#e2e8f0'
             borderWidth: 1,
             shadowOpacity: 0.1,
             shadowRadius: 3,
             shadowOffset: { width: 0, height: 1 },
         },
         warning: {
-            backgroundColor: '#fef2f2', // Light red
-            borderColor: '#fee2e2', // Lighter red border
+            backgroundColor: '#fef2f2',                  // Keep light red (theme doesn't have warning backgrounds)
+            borderColor: '#fee2e2',                      // Keep lighter red border
             borderWidth: 1,
             shadowOpacity: 0.1,
             shadowRadius: 3,
             shadowOffset: { width: 0, height: 1 },
         },
         secondary: {
-            backgroundColor: '#f8fafc', // Very light gray
-            borderColor: '#e2e8f0', // Light gray border
+            backgroundColor: currentTheme.muted,         // Using theme.muted instead of '#f8fafc'
+            borderColor: currentTheme.border,           // Using theme.border instead of '#e2e8f0'
             borderWidth: 1,
             shadowOpacity: 0.05,
             shadowRadius: 2,
+            shadowOffset: { width: 0, height: 1 },
+        },
+        outline: {
+            backgroundColor: 'transparent',              // New: transparent background
+            borderColor: currentTheme.border,           // Using theme.border
+            borderWidth: 1,
+            shadowOpacity: 0,
+            shadowRadius: 0,
+            shadowOffset: { width: 0, height: 0 },
+        },
+        elevated: {
+            backgroundColor: currentTheme.card,          // Using theme.card
+            borderColor: 'transparent',                 // New: no border for elevated cards
+            borderWidth: 0,
+            shadowOpacity: 0.15,                        // More shadow for elevation
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 4 },
+        },
+        muted: {
+            backgroundColor: currentTheme.muted,         // New: using theme.muted
+            borderColor: currentTheme.border,           // Using theme.border
+            borderWidth: 1,
+            shadowOpacity: 0.05,
+            shadowRadius: 2,
+            shadowOffset: { width: 0, height: 1 },
+        },
+        accent: {
+            backgroundColor: currentTheme.accent,        // New: using theme.accent
+            borderColor: currentTheme.border,           // Using theme.border
+            borderWidth: 1,
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            shadowOffset: { width: 0, height: 1 },
+        },
+        destructive: {
+            backgroundColor: '#fef2f2',                  // Light red background
+            borderColor: currentTheme.destructive,      // Using theme.destructive for border
+            borderWidth: 1,
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
             shadowOffset: { width: 0, height: 1 },
         },
     },
@@ -55,7 +97,7 @@ export const Card = ({
     variant = 'default',
     style,
     padding = 16,
-    borderRadius = 8,
+    borderRadius = radius.lg,                            // Using theme radius instead of hardcoded 8
     borderTopLeftRadius,
     borderTopRightRadius,
     borderBottomLeftRadius,

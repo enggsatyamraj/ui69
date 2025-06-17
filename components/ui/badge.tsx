@@ -1,43 +1,55 @@
 import React from 'react';
 import { View, Text, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// Define variants for the Badge component
+// Define variants for the Badge component using theme colors
 const badgeVariants = {
     variant: {
         default: {
-            backgroundColor: '#111827', // Gray-900
-            textColor: '#ffffff', // White
+            backgroundColor: currentTheme.foreground,         // Using theme.foreground instead of '#111827'
+            textColor: currentTheme.background,              // Using theme.background instead of '#ffffff'
             borderColor: 'transparent',
         },
         primary: {
-            backgroundColor: '#3b82f6', // Blue-500
-            textColor: '#ffffff', // White
+            backgroundColor: currentTheme.primary,           // Using theme.primary instead of '#3b82f6'
+            textColor: currentTheme.primaryForeground,      // Using theme.primaryForeground instead of '#ffffff'
             borderColor: 'transparent',
         },
         secondary: {
-            backgroundColor: '#f1f5f9', // Slate-100
-            textColor: '#475569', // Slate-600
+            backgroundColor: currentTheme.secondary,         // Using theme.secondary instead of '#f1f5f9'
+            textColor: currentTheme.secondaryForeground,    // Using theme.secondaryForeground instead of '#475569'
             borderColor: 'transparent',
         },
         success: {
-            backgroundColor: '#22c55e', // Green-500
-            textColor: '#ffffff', // White
+            backgroundColor: '#22c55e',                      // Keep success color (theme doesn't have success)
+            textColor: '#ffffff',                            // White text
             borderColor: 'transparent',
         },
         warning: {
-            backgroundColor: '#f59e0b', // Amber-500
-            textColor: '#ffffff', // White
+            backgroundColor: '#f59e0b',                      // Keep warning color (theme doesn't have warning)
+            textColor: '#ffffff',                            // White text
             borderColor: 'transparent',
         },
         error: {
-            backgroundColor: '#ef4444', // Red-500
-            textColor: '#ffffff', // White
+            backgroundColor: currentTheme.destructive,      // Using theme.destructive instead of '#ef4444'
+            textColor: currentTheme.destructiveForeground, // Using theme.destructiveForeground
             borderColor: 'transparent',
         },
         outline: {
             backgroundColor: 'transparent',
-            textColor: '#475569', // Slate-600
-            borderColor: '#e2e8f0', // Slate-200
+            textColor: currentTheme.foreground,             // Using theme.foreground instead of '#475569'
+            borderColor: currentTheme.border,               // Using theme.border instead of '#e2e8f0'
+        },
+        muted: {
+            backgroundColor: currentTheme.muted,            // New: using theme.muted
+            textColor: currentTheme.mutedForeground,       // New: using theme.mutedForeground
+            borderColor: 'transparent',
+        },
+        accent: {
+            backgroundColor: currentTheme.accent,           // New: using theme.accent
+            textColor: currentTheme.accentForeground,      // New: using theme.accentForeground
+            borderColor: 'transparent',
         },
     },
     size: {
@@ -45,21 +57,21 @@ const badgeVariants = {
             paddingHorizontal: 6,
             paddingVertical: 2,
             fontSize: 11,
-            borderRadius: 8,
+            borderRadius: radius.sm,                        // Using theme radius instead of hardcoded 8
             height: 18,
         },
         md: {
             paddingHorizontal: 8,
             paddingVertical: 3,
             fontSize: 12,
-            borderRadius: 10,
+            borderRadius: radius.md,                        // Using theme radius instead of hardcoded 10
             height: 22,
         },
         lg: {
             paddingHorizontal: 10,
             paddingVertical: 4,
             fontSize: 13,
-            borderRadius: 12,
+            borderRadius: radius.lg,                        // Using theme radius instead of hardcoded 12
             height: 26,
         },
     },

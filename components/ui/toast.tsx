@@ -1,56 +1,58 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    Pressable,
     Animated,
     Dimensions,
     Platform,
+    Pressable,
     StatusBar,
     StyleProp,
-    ViewStyle,
+    StyleSheet,
+    Text,
     TextStyle,
+    View,
+    ViewStyle,
 } from 'react-native';
 import {
     PanGestureHandler,
     State,
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Import our theme
+import { currentTheme } from '../../theme.config';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Toast variants with modern, subtle styling
+// Toast variants using theme colors
 const TOAST_VARIANTS = {
     default: {
-        backgroundColor: '#ffffff',
-        borderColor: '#e4e4e7',
-        textColor: '#18181b',
-        iconColor: '#71717a',
+        backgroundColor: currentTheme.card,              // Using theme.card instead of '#ffffff'
+        borderColor: currentTheme.border,               // Using theme.border instead of '#e4e4e7'
+        textColor: currentTheme.cardForeground,         // Using theme.cardForeground instead of '#18181b'
+        iconColor: currentTheme.mutedForeground,        // Using theme.mutedForeground instead of '#71717a'
     },
     success: {
-        backgroundColor: '#f0fdf4',
-        borderColor: '#16a34a',
-        textColor: '#15803d',
-        iconColor: '#16a34a',
+        backgroundColor: '#f0fdf4',                      // Keep success colors (theme doesn't have success)
+        borderColor: '#16a34a',                          // Keep success colors
+        textColor: '#15803d',                            // Keep success colors
+        iconColor: '#16a34a',                            // Keep success colors
     },
     error: {
-        backgroundColor: '#fef2f2',
-        borderColor: '#dc2626',
-        textColor: '#dc2626',
-        iconColor: '#dc2626',
+        backgroundColor: '#fef2f2',                      // Light red background
+        borderColor: currentTheme.destructive,          // Using theme.destructive instead of '#dc2626'
+        textColor: currentTheme.destructive,            // Using theme.destructive
+        iconColor: currentTheme.destructive,            // Using theme.destructive
     },
     warning: {
-        backgroundColor: '#fffbeb',
-        borderColor: '#d97706',
-        textColor: '#d97706',
-        iconColor: '#d97706',
+        backgroundColor: '#fffbeb',                      // Keep warning colors (theme doesn't have warning)
+        borderColor: '#d97706',                          // Keep warning colors
+        textColor: '#d97706',                            // Keep warning colors
+        iconColor: '#d97706',                            // Keep warning colors
     },
     info: {
-        backgroundColor: '#eff6ff',
-        borderColor: '#2563eb',
-        textColor: '#2563eb',
-        iconColor: '#2563eb',
+        backgroundColor: '#eff6ff',                      // Keep info colors (theme doesn't have info)
+        borderColor: '#2563eb',                          // Keep info colors
+        textColor: '#2563eb',                            // Keep info colors
+        iconColor: '#2563eb',                            // Keep info colors
     },
 };
 
@@ -444,7 +446,6 @@ const styles = StyleSheet.create({
     toastContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ffffff',
         borderRadius: 8,
         paddingVertical: 12,
         paddingHorizontal: 16,

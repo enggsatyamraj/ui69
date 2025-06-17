@@ -1,46 +1,47 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-    View,
-    TextInput,
-    Text,
-    StyleSheet,
-    Keyboard,
-    ViewStyle,
-    TextStyle,
-    StyleProp,
-    NativeSyntheticEvent,
-    TextInputKeyPressEventData,
-    Platform,
     Clipboard,
     KeyboardTypeOptions,
+    NativeSyntheticEvent,
+    Platform,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextInput,
+    TextInputKeyPressEventData,
+    TextStyle,
+    View,
+    ViewStyle
 } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// Define input variants
+// Define input variants using theme colors
 const inputOTPVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
+            backgroundColor: currentTheme.background,
+            borderColor: currentTheme.border,
+            textColor: currentTheme.foreground,
+            placeholderColor: currentTheme.mutedForeground,
+            focusBorderColor: currentTheme.ring,
+            errorBorderColor: currentTheme.destructive,
         },
         outline: {
             backgroundColor: 'transparent',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
+            borderColor: currentTheme.border,
+            textColor: currentTheme.foreground,
+            placeholderColor: currentTheme.mutedForeground,
+            focusBorderColor: currentTheme.ring,
+            errorBorderColor: currentTheme.destructive,
         },
         filled: {
-            backgroundColor: '#f1f5f9',
+            backgroundColor: currentTheme.muted,
             borderColor: 'transparent',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
+            textColor: currentTheme.foreground,
+            placeholderColor: currentTheme.mutedForeground,
+            focusBorderColor: currentTheme.ring,
+            errorBorderColor: currentTheme.destructive,
         },
     },
     size: {
@@ -48,19 +49,19 @@ const inputOTPVariants = {
             width: 36,
             height: 36,
             fontSize: 16,
-            borderRadius: 4,
+            borderRadius: radius.sm,
         },
         md: {
             width: 44,
             height: 44,
             fontSize: 20,
-            borderRadius: 6,
+            borderRadius: radius.md,
         },
         lg: {
             width: 56,
             height: 56,
             fontSize: 24,
-            borderRadius: 8,
+            borderRadius: radius.lg,
         },
     },
 };
@@ -82,7 +83,7 @@ type InputOTPContextType = {
     maxLength: number;
     disabled?: boolean;
     variant: keyof typeof inputOTPVariants.variant;
-    size: ToastSize;
+    size: keyof typeof inputOTPVariants.size;
     mask?: boolean;
     maskCharacter?: string;
     pattern?: RegExp;
@@ -104,9 +105,11 @@ type InputOTPContextType = {
     getKeyboardType: () => KeyboardTypeOptions;
     autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
     inputMode?: 'numeric' | 'text';
+    // Custom size props
+    customWidth?: number;
+    customHeight?: number;
+    customFontSize?: number;
 };
-
-type ToastSize = keyof typeof inputOTPVariants.size;
 
 // Create context
 const InputOTPContext = createContext<InputOTPContextType | undefined>(undefined);
@@ -127,7 +130,7 @@ export interface InputOTPProps {
     maxLength: number;
     disabled?: boolean;
     variant?: keyof typeof inputOTPVariants.variant;
-    size?: ToastSize;
+    size?: keyof typeof inputOTPVariants.size;
     mask?: boolean;
     maskCharacter?: string;
     pattern?: RegExp | keyof typeof PATTERNS;
@@ -143,6 +146,10 @@ export interface InputOTPProps {
     };
     autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
     inputMode?: 'numeric' | 'text';
+    // Custom size props
+    customWidth?: number;   // Custom width in pixels
+    customHeight?: number;  // Custom height in pixels
+    customFontSize?: number; // Custom font size
 }
 
 export const InputOTP: React.FC<InputOTPProps> = ({
@@ -165,6 +172,9 @@ export const InputOTP: React.FC<InputOTPProps> = ({
     inputProps,
     autoCapitalize = 'none',
     inputMode = 'numeric',
+    customWidth,
+    customHeight,
+    customFontSize,
 }) => {
     // State for internal value handling
     const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
@@ -358,6 +368,9 @@ export const InputOTP: React.FC<InputOTPProps> = ({
         getKeyboardType,
         autoCapitalize,
         inputMode,
+        customWidth,
+        customHeight,
+        customFontSize,
     };
 
     return (
@@ -411,6 +424,9 @@ export const InputOTPSlot: React.FC<InputOTPSlotProps> = ({
         getKeyboardType,
         autoCapitalize,
         inputMode,
+        customWidth,
+        customHeight,
+        customFontSize,
     } = useInputOTPContext();
 
     // Character for this slot
@@ -423,11 +439,11 @@ export const InputOTPSlot: React.FC<InputOTPSlotProps> = ({
     // Check if this input has focus
     const isFocused = activeIndex === index;
 
-    // Apply styles
+    // Apply styles with custom size support
     const inputStyles = {
-        width: sizeStyle.width,
-        height: sizeStyle.height,
-        fontSize: sizeStyle.fontSize,
+        width: customWidth || sizeStyle.width,
+        height: customHeight || sizeStyle.height,
+        fontSize: customFontSize || sizeStyle.fontSize,
         color: variantStyle.textColor,
         borderRadius: sizeStyle.borderRadius,
         backgroundColor: variantStyle.backgroundColor,
@@ -454,6 +470,7 @@ export const InputOTPSlot: React.FC<InputOTPSlotProps> = ({
         <View style={[styles.slotContainer, containerStyle]}>
             <TextInput
                 ref={inputRefs[index]}
+                // @ts-ignore
                 style={[styles.input, inputStyles, style]}
                 value={displayValue}
                 onChangeText={(text) => handleTextChange(index, text)}
@@ -488,7 +505,7 @@ export const InputOTPSeparator: React.FC<InputOTPSeparatorProps> = ({
 }) => {
     return (
         <View style={[styles.separator, style]}>
-            {separator || <Text style={styles.separatorText}>-</Text>}
+            {separator || <Text style={[styles.separatorText, { color: currentTheme.mutedForeground }]}>-</Text>}
         </View>
     );
 };
@@ -518,7 +535,6 @@ const styles = StyleSheet.create({
     separatorText: {
         fontSize: 24,
         fontWeight: '500',
-        color: '#64748b',
     },
 });
 

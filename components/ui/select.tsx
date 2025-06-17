@@ -16,11 +16,13 @@ import {
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Custom ChevronDown component
-const ChevronDown = ({ color = '#71717a', size = 16 }) => (
+// Custom ChevronDown component with theme color support
+const ChevronDown = ({ color = currentTheme.mutedForeground, size = 16 }) => (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <Path
             d="M6 9L12 15L18 9"
@@ -32,21 +34,21 @@ const ChevronDown = ({ color = '#71717a', size = 16 }) => (
     </Svg>
 );
 
-// Simplified styles without variants
+// Theme-based styles instead of hardcoded values
 const COMMON_STYLES = {
     height: 40,
-    borderRadius: 6,
+    borderRadius: radius.md,                            // Using theme radius instead of hardcoded 6
     padding: 12,
     fontSize: 14,
-    backgroundColor: '#ffffff',
-    borderColor: '#e4e4e7',
-    focusBorderColor: '#18181b',
-    textColor: '#09090b',
-    placeholderColor: '#71717a',
-    contentBackground: '#ffffff',
-    contentBorder: '#e4e4e7',
-    selectedBackground: '#f4f4f5',
-    hoverBackground: '#f9fafb',
+    backgroundColor: currentTheme.background,           // Using theme.background instead of '#ffffff'
+    borderColor: currentTheme.border,                   // Using theme.border instead of '#e4e4e7'
+    focusBorderColor: currentTheme.ring,                // Using theme.ring instead of '#18181b'
+    textColor: currentTheme.foreground,                 // Using theme.foreground instead of '#09090b'
+    placeholderColor: currentTheme.mutedForeground,     // Using theme.mutedForeground instead of '#71717a'
+    contentBackground: currentTheme.popover,            // Using theme.popover instead of '#ffffff'
+    contentBorder: currentTheme.border,                 // Using theme.border instead of '#e4e4e7'
+    selectedBackground: currentTheme.accent,            // Using theme.accent instead of '#f4f4f5'
+    hoverBackground: currentTheme.muted,                // Using theme.muted instead of '#f9fafb'
     disabledOpacity: 0.5,
 };
 
@@ -438,12 +440,12 @@ export const SelectGroup: React.FC<{ children: React.ReactNode; style?: StylePro
 
 export const SelectLabel: React.FC<{ children: React.ReactNode; style?: StyleProp<ViewStyle>; textStyle?: StyleProp<TextStyle> }> = ({ children, style, textStyle }) => (
     <View style={[styles.selectLabel, style]}>
-        <Text style={[styles.selectLabelText, textStyle]}>{children}</Text>
+        <Text style={[styles.selectLabelText, { color: currentTheme.mutedForeground }, textStyle]}>{children}</Text>
     </View>
 );
 
 export const SelectSeparator: React.FC<{ style?: StyleProp<ViewStyle> }> = ({ style }) => (
-    <View style={[styles.separator, style]} />
+    <View style={[styles.separator, { backgroundColor: COMMON_STYLES.contentBorder }, style]} />
 );
 
 const styles = StyleSheet.create({
@@ -497,7 +499,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginHorizontal: 2,
         marginVertical: 1,
-        borderRadius: 4,
+        borderRadius: radius.sm,                            // Using theme radius instead of hardcoded 4
     },
     selectItemSelected: {
         backgroundColor: COMMON_STYLES.selectedBackground,
@@ -523,7 +525,8 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     selectItemTextDisabled: {
-        color: '#a1a1aa',
+        color: currentTheme.mutedForeground,                // Using theme.mutedForeground instead of '#a1a1aa'
+        opacity: 0.6,
     },
     checkmark: {
         fontSize: 14,
@@ -538,13 +541,11 @@ const styles = StyleSheet.create({
     selectLabelText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#71717a',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
     separator: {
         height: 1,
-        backgroundColor: COMMON_STYLES.contentBorder,
         marginVertical: 4,
         marginHorizontal: 8,
     },

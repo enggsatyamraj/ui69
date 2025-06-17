@@ -12,6 +12,8 @@ import {
     TextStyle,
     StyleProp,
 } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -20,29 +22,29 @@ if (Platform.OS === 'android') {
     }
 }
 
-// Define accordion variants
+// Define accordion variants using theme colors
 const accordionVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            headerBackgroundColor: '#f8fafc',
-            iconColor: '#64748b',
+            backgroundColor: currentTheme.card,              // Using theme.card instead of '#ffffff'
+            borderColor: currentTheme.border,               // Using theme.border instead of '#e2e8f0'
+            textColor: currentTheme.cardForeground,         // Using theme.cardForeground instead of '#0f172a'
+            headerBackgroundColor: currentTheme.muted,      // Using theme.muted instead of '#f8fafc'
+            iconColor: currentTheme.mutedForeground,        // Using theme.mutedForeground instead of '#64748b'
         },
         outline: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            headerBackgroundColor: 'transparent',
-            iconColor: '#64748b',
+            backgroundColor: currentTheme.background,        // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,               // Using theme.border instead of '#e2e8f0'
+            textColor: currentTheme.foreground,             // Using theme.foreground instead of '#0f172a'
+            headerBackgroundColor: 'transparent',           // Keep transparent
+            iconColor: currentTheme.mutedForeground,        // Using theme.mutedForeground instead of '#64748b'
         },
         filled: {
-            backgroundColor: '#f8fafc',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            headerBackgroundColor: '#f1f5f9',
-            iconColor: '#64748b',
+            backgroundColor: currentTheme.muted,             // Using theme.muted instead of '#f8fafc'
+            borderColor: currentTheme.border,               // Using theme.border instead of '#e2e8f0'
+            textColor: currentTheme.foreground,             // Using theme.foreground instead of '#0f172a'
+            headerBackgroundColor: currentTheme.secondary,  // Using theme.secondary instead of '#f1f5f9'
+            iconColor: currentTheme.mutedForeground,        // Using theme.mutedForeground instead of '#64748b'
         },
     },
     size: {
@@ -51,7 +53,7 @@ const accordionVariants = {
             paddingVertical: 8,
             fontSize: 13,
             iconSize: 10,
-            borderRadius: 6,
+            borderRadius: radius.sm,                         // Using theme radius instead of hardcoded 6
             gap: 8,
         },
         md: {
@@ -59,7 +61,7 @@ const accordionVariants = {
             paddingVertical: 12,
             fontSize: 14,
             iconSize: 10,
-            borderRadius: 8,
+            borderRadius: radius.md,                         // Using theme radius instead of hardcoded 8
             gap: 10,
         },
         lg: {
@@ -67,7 +69,7 @@ const accordionVariants = {
             paddingVertical: 16,
             fontSize: 16,
             iconSize: 12,
-            borderRadius: 10,
+            borderRadius: radius.lg,                         // Using theme radius instead of hardcoded 10
             gap: 12,
         },
     },
@@ -427,8 +429,8 @@ const styles = StyleSheet.create({
     },
     item: {
         borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 8,
+        borderColor: currentTheme.border,               // Using theme.border instead of hardcoded '#e2e8f0'
+        borderRadius: radius.md,                        // Using theme radius instead of hardcoded 8
         overflow: 'hidden',
         marginBottom: 2,
     },

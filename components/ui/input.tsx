@@ -11,49 +11,51 @@ import {
     KeyboardTypeOptions,
     ReturnKeyTypeOptions,
 } from 'react-native';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-// Define input variants following shadcn/ui patterns
+// Define input variants following shadcn/ui patterns using theme colors
 const inputVariants = {
     variant: {
         default: {
-            backgroundColor: '#ffffff',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
-            disabledBackgroundColor: '#f8fafc',
-            disabledTextColor: '#94a3b8',
+            backgroundColor: currentTheme.background,           // Using theme.background instead of '#ffffff'
+            borderColor: currentTheme.border,                  // Using theme.border instead of '#e2e8f0'
+            textColor: currentTheme.foreground,                // Using theme.foreground instead of '#0f172a'
+            placeholderColor: currentTheme.mutedForeground,    // Using theme.mutedForeground instead of '#94a3b8'
+            focusBorderColor: currentTheme.ring,               // Using theme.ring instead of '#3b82f6'
+            errorBorderColor: currentTheme.destructive,        // Using theme.destructive instead of '#ef4444'
+            disabledBackgroundColor: currentTheme.muted,       // Using theme.muted instead of '#f8fafc'
+            disabledTextColor: currentTheme.mutedForeground,   // Using theme.mutedForeground instead of '#94a3b8'
         },
         outline: {
             backgroundColor: 'transparent',
-            borderColor: '#e2e8f0',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
-            disabledBackgroundColor: '#f8fafc',
-            disabledTextColor: '#94a3b8',
+            borderColor: currentTheme.border,                  // Using theme.border instead of '#e2e8f0'
+            textColor: currentTheme.foreground,                // Using theme.foreground instead of '#0f172a'
+            placeholderColor: currentTheme.mutedForeground,    // Using theme.mutedForeground instead of '#94a3b8'
+            focusBorderColor: currentTheme.ring,               // Using theme.ring instead of '#3b82f6'
+            errorBorderColor: currentTheme.destructive,        // Using theme.destructive instead of '#ef4444'
+            disabledBackgroundColor: currentTheme.muted,       // Using theme.muted instead of '#f8fafc'
+            disabledTextColor: currentTheme.mutedForeground,   // Using theme.mutedForeground instead of '#94a3b8'
         },
         filled: {
-            backgroundColor: '#f1f5f9',
+            backgroundColor: currentTheme.muted,               // Using theme.muted instead of '#f1f5f9'
             borderColor: 'transparent',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#3b82f6',
-            errorBorderColor: '#ef4444',
-            disabledBackgroundColor: '#e2e8f0',
-            disabledTextColor: '#94a3b8',
+            textColor: currentTheme.foreground,                // Using theme.foreground instead of '#0f172a'
+            placeholderColor: currentTheme.mutedForeground,    // Using theme.mutedForeground instead of '#94a3b8'
+            focusBorderColor: currentTheme.ring,               // Using theme.ring instead of '#3b82f6'
+            errorBorderColor: currentTheme.destructive,        // Using theme.destructive instead of '#ef4444'
+            disabledBackgroundColor: currentTheme.border,      // Using theme.border instead of '#e2e8f0'
+            disabledTextColor: currentTheme.mutedForeground,   // Using theme.mutedForeground instead of '#94a3b8'
         },
         ghost: {
             backgroundColor: 'transparent',
             borderColor: 'transparent',
-            textColor: '#0f172a',
-            placeholderColor: '#94a3b8',
-            focusBorderColor: '#e2e8f0',
-            errorBorderColor: '#ef4444',
+            textColor: currentTheme.foreground,                // Using theme.foreground instead of '#0f172a'
+            placeholderColor: currentTheme.mutedForeground,    // Using theme.mutedForeground instead of '#94a3b8'
+            focusBorderColor: currentTheme.border,             // Using theme.border instead of '#e2e8f0'
+            errorBorderColor: currentTheme.destructive,        // Using theme.destructive instead of '#ef4444'
             disabledBackgroundColor: 'transparent',
-            disabledTextColor: '#94a3b8',
+            disabledTextColor: currentTheme.mutedForeground,   // Using theme.mutedForeground instead of '#94a3b8'
         },
     },
     size: {
@@ -62,7 +64,7 @@ const inputVariants = {
             paddingHorizontal: 12,
             paddingVertical: 6,
             fontSize: 13,
-            borderRadius: 4,
+            borderRadius: radius.sm,                           // Using theme radius instead of hardcoded 4
             iconSize: 14,
         },
         md: {
@@ -70,7 +72,7 @@ const inputVariants = {
             paddingHorizontal: 16,
             paddingVertical: 8,
             fontSize: 14,
-            borderRadius: 6,
+            borderRadius: radius.md,                           // Using theme radius instead of hardcoded 6
             iconSize: 16,
         },
         lg: {
@@ -78,7 +80,7 @@ const inputVariants = {
             paddingHorizontal: 20,
             paddingVertical: 12,
             fontSize: 16,
-            borderRadius: 8,
+            borderRadius: radius.lg,                           // Using theme radius instead of hardcoded 8
             iconSize: 18,
         },
     },
@@ -342,7 +344,7 @@ export const Input = forwardRef<TextInput, InputProps>(({
                     testID={`${testID}-label`}
                 >
                     {label}
-                    {required && <Text style={styles.required}> *</Text>}
+                    {required && <Text style={[styles.required, { color: currentTheme.destructive }]}> *</Text>}
                 </Text>
             )}
 
@@ -440,7 +442,7 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     required: {
-        color: '#ef4444',
+        // color will be set dynamically using theme.destructive
     },
     helperText: {
         marginTop: 4,

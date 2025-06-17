@@ -10,8 +10,50 @@ import Animated, {
     withSequence,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+// Import our theme
+import { currentTheme, radius } from '../../theme.config';
 
-export type AnimationType = 'shimmer' | 'wave' | 'none';
+export type AnimationType = 'shimmer' | 'wave' | 'pulse' | 'none';
+
+// Define skeleton variants using theme colors
+const skeletonVariants = {
+    variant: {
+        default: {
+            backgroundColor: currentTheme.muted,               // Using theme.muted instead of '#e0e0e0'
+            highlightColor: currentTheme.background,          // Using theme.background for highlight
+        },
+        subtle: {
+            backgroundColor: currentTheme.accent,             // Using theme.accent for subtle variant
+            highlightColor: currentTheme.background,          // Using theme.background for highlight
+        },
+        card: {
+            backgroundColor: currentTheme.card,               // Using theme.card for card-like skeletons
+            highlightColor: currentTheme.muted,               // Using theme.muted for highlight
+        },
+        text: {
+            backgroundColor: currentTheme.mutedForeground,    // Using theme.mutedForeground for text-like skeletons
+            highlightColor: currentTheme.muted,               // Using theme.muted for highlight
+        },
+    },
+    size: {
+        sm: {
+            height: 16,
+            borderRadius: radius.sm,                          // Using theme radius instead of hardcoded 4
+        },
+        md: {
+            height: 20,
+            borderRadius: radius.md,                          // Using theme radius
+        },
+        lg: {
+            height: 24,
+            borderRadius: radius.lg,                          // Using theme radius
+        },
+        xl: {
+            height: 32,
+            borderRadius: radius.xl,                          // Using theme radius
+        },
+    },
+};
 
 export interface SkeletonProps {
     width?: number | string;
@@ -22,18 +64,34 @@ export interface SkeletonProps {
     highlightColor?: string;
     animationType?: AnimationType;
     duration?: number; // Custom duration in milliseconds
+    variant?: keyof typeof skeletonVariants.variant;
+    size?: keyof typeof skeletonVariants.size;
+    opacity?: number; // Custom opacity for the skeleton
 }
 
 export const Skeleton = ({
     width = '100%',
-    height = 16,
-    borderRadius = 4,
+    height,
+    borderRadius,
     style,
-    backgroundColor = '#e0e0e0',
-    highlightColor = 'rgba(255, 255, 255, 0.5)',
+    backgroundColor,
+    highlightColor,
     animationType = 'shimmer',
     duration = 1200, // Default duration: 1.2 seconds
+    variant = 'default',
+    size = 'md',
+    opacity = 1,
 }: SkeletonProps) => {
+    // Get variant and size styles
+    const variantStyle = skeletonVariants.variant[variant];
+    const sizeStyle = skeletonVariants.size[size];
+
+    // Use theme colors or custom overrides
+    const finalBackgroundColor = backgroundColor || variantStyle.backgroundColor;
+    const finalHighlightColor = highlightColor || variantStyle.highlightColor;
+    const finalHeight = height || sizeStyle.height;
+    const finalBorderRadius = borderRadius !== undefined ? borderRadius : sizeStyle.borderRadius;
+
     // Animation progress value
     const animationValue = useSharedValue(0);
 
@@ -65,6 +123,18 @@ export const Skeleton = ({
                         withTiming(0.8, { duration: segmentDuration }),
                         withTiming(0.2, { duration: segmentDuration }),
                         withTiming(0, { duration: segmentDuration }),
+                    ),
+                    -1, // Infinite repeat
+                    false
+                );
+                break;
+
+            case 'pulse':
+                // New pulse animation
+                animationValue.value = withRepeat(
+                    withSequence(
+                        withTiming(1, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
+                        withTiming(0, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
                     ),
                     -1, // Infinite repeat
                     false
@@ -110,7 +180,7 @@ export const Skeleton = ({
                             end={{ x: 1, y: 0 }}
                             colors={[
                                 'rgba(255, 255, 255, 0)', // Transparent
-                                highlightColor, // Highlight color
+                                finalHighlightColor, // Highlight color from theme
                                 'rgba(255, 255, 255, 0)', // Back to transparent
                             ]}
                             locations={[0.3, 0.5, 0.7]} // Concentrated in the middle
@@ -127,7 +197,7 @@ export const Skeleton = ({
                             [0, 0.5, 1],
                             [0.4, 0.9, 0.4]
                         ),
-                        backgroundColor: highlightColor,
+                        backgroundColor: finalHighlightColor,
                     };
                 });
 
@@ -136,6 +206,37 @@ export const Skeleton = ({
                         style={[
                             StyleSheet.absoluteFill,
                             waveStyle,
+                        ]}
+                    />
+                );
+
+            case 'pulse':
+                // New pulse animation with scale and opacity
+                const pulseStyle = useAnimatedStyle(() => {
+                    const scale = interpolate(
+                        animationValue.value,
+                        [0, 1],
+                        [0.95, 1.02]
+                    );
+
+                    const pulseOpacity = interpolate(
+                        animationValue.value,
+                        [0, 0.5, 1],
+                        [0.6, 1, 0.6]
+                    );
+
+                    return {
+                        transform: [{ scale }],
+                        opacity: pulseOpacity,
+                    };
+                });
+
+                return (
+                    <Animated.View
+                        style={[
+                            StyleSheet.absoluteFill,
+                            pulseStyle,
+                            { backgroundColor: finalHighlightColor }
                         ]}
                     />
                 );
@@ -151,10 +252,11 @@ export const Skeleton = ({
             style={[
                 {
                     width,
-                    height,
-                    borderRadius,
-                    backgroundColor,
+                    height: finalHeight,
+                    borderRadius: finalBorderRadius,
+                    backgroundColor: finalBackgroundColor,
                     overflow: 'hidden', // Important to clip the gradient
+                    opacity,
                 },
                 style,
             ]}
@@ -164,3 +266,51 @@ export const Skeleton = ({
     );
 };
 
+// Predefined skeleton shapes for common use cases
+export const SkeletonText = ({ lines = 3, ...props }: { lines?: number } & Partial<SkeletonProps>) => {
+    return (
+        <View style={{ gap: 8 }}>
+            {Array.from({ length: lines }).map((_, index) => (
+                <Skeleton
+                    key={index}
+                    variant="text"
+                    size="sm"
+                    width={index === lines - 1 ? '60%' : '100%'} // Last line is shorter
+                    {...props}
+                />
+            ))}
+        </View>
+    );
+};
+
+// @ts-ignore
+export const SkeletonCircle = ({ size = 40, ...props }: { size?: number } & Partial<SkeletonProps>) => {
+    return (
+        <Skeleton
+            width={size}
+            height={size}
+            borderRadius={size / 2}
+            variant="default"
+            {...props}
+        />
+    );
+};
+
+export const SkeletonCard = ({ ...props }: Partial<SkeletonProps>) => {
+    return (
+        <View style={{ gap: 12, padding: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                {/* @ts-ignore */}
+                <SkeletonCircle size={40} {...props} />
+                <View style={{ flex: 1, gap: 4 }}>
+                    <Skeleton variant="text" size="md" width="70%" {...props} />
+                    <Skeleton variant="text" size="sm" width="50%" {...props} />
+                </View>
+            </View>
+            <Skeleton variant="card" height={120} {...props} />
+            <SkeletonText lines={2} {...props} />
+        </View>
+    );
+};
+
+export { skeletonVariants };
