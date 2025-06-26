@@ -313,6 +313,17 @@ function getComponentsConfig() {
                 }
             ]
         },
+        'alert-dialog': {
+            name: "AlertDialog",
+            description: "Modal dialogs that interrupt the user with important content and await a decision",
+            dependencies: ['react-native-safe-area-context', 'expo-linear-gradient'],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/alert-dialog.tsx'),
+                    dest: 'components/ui/alert-dialog.tsx',
+                }
+            ]
+        },
         button: {
             name: "Button",
             description: "Button component with multiple variants and sizes",

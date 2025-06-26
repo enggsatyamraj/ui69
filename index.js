@@ -16,6 +16,20 @@ module.exports = {
     InfoAlert: require('./components/ui/alert').InfoAlert,
     alertVariants: require('./components/ui/alert').alertVariants,
 
+    // Alert-dialog exports
+    AlertDialog: require('./components/ui/alert-dialog').AlertDialog,
+    AlertDialogAction: require('./components/ui/alert-dialog').AlertDialogAction,
+    AlertDialogCancel: require('./components/ui/alert-dialog').AlertDialogCancel,
+    AlertDialogContent: require('./components/ui/alert-dialog').AlertDialogContent,
+    AlertDialogDescription: require('./components/ui/alert-dialog').AlertDialogDescription,
+    AlertDialogFooter: require('./components/ui/alert-dialog').AlertDialogFooter,
+    AlertDialogHeader: require('./components/ui/alert-dialog').AlertDialogHeader,
+    AlertDialogOverlay: require('./components/ui/alert-dialog').AlertDialogOverlay,
+    AlertDialogPortal: require('./components/ui/alert-dialog').AlertDialogPortal,
+    AlertDialogTitle: require('./components/ui/alert-dialog').AlertDialogTitle,
+    AlertDialogTrigger: require('./components/ui/alert-dialog').AlertDialogTrigger,
+    alertDialogVariants: require('./components/ui/alert-dialog').alertDialogVariants,
+
     // Export components for direct import if needed
     Button: require('./components/ui/button').Button,
 
