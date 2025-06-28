@@ -52,7 +52,7 @@ const log = {
     muted: (text) => console.log(`${colors.gray}${text}${colors.reset}`)
 };
 
-// Theme configuration template
+// Theme configuration template (TypeScript version)
 const THEME_CONFIG_TEMPLATE = `// theme.config.ts
 /**
  * UI69 Theme Configuration
@@ -226,7 +226,40 @@ export const currentTheme = lightTheme;
  * 4. Test your colors with both light and dark text
  * 5. Keep \`border\` and \`input\` subtle for a clean look
  */
+
+/**
+ * 💡 PRO TIPS:
+ * 
+ * 1. Start by changing just the \`primary\` color - this will transform your app!
+ * 2. Make sure \`primaryForeground\` has good contrast with \`primary\`
+ * 3. Use online tools like coolors.co to generate color palettes
+ * 4. Test your colors with both light and dark text
+ * 5. Keep \`border\` and \`input\` subtle for a clean look
+ */
 `;
+
+// Check if theme.config.js exists in the current directory
+function checkThemeConfigExists() {
+    const currentDir = process.cwd();
+    const themeConfigPaths = [
+        path.join(currentDir, 'theme.config.js'),
+        path.join(currentDir, 'theme.config.ts')
+    ];
+
+    return themeConfigPaths.some(configPath => fs.existsSync(configPath));
+}
+
+// Show error message when theme config is missing
+function showThemeConfigMissing() {
+    showSplash();
+    log.error('ui69 is not initialized in this project.');
+    console.log('');
+    log.info('To get started, run the init command:');
+    log.code('  npx ui69@latest init');
+    console.log('');
+    log.muted('This will create a theme.config.ts file in your project root.');
+    console.log('');
+}
 
 // Ensure component directory exists
 function ensureComponentsExist() {
@@ -273,7 +306,9 @@ async function initializeProject() {
         // Check if it's a TypeScript project and suggest tsconfig update
         const tsconfigPath = path.join(currentDir, 'tsconfig.json');
         if (fs.existsSync(tsconfigPath)) {
-            log.info('TypeScript project detected!');
+            log.info('TypeScript project detected! ✨');
+        } else {
+            log.muted('You can also create a tsconfig.json file if you want to use TypeScript.');
         }
 
         // Success message
@@ -281,13 +316,13 @@ async function initializeProject() {
 
         console.log('Next steps:');
         log.code('  1. Customize your theme in theme.config.ts');
-        log.code('  2. Add components: npx ui69 add button');
+        log.code('  2. Add components: npx ui69@latest add button');
         log.code('  3. Import and use: import { Button } from "./components/ui/button"');
 
-        console.log('\nQuick start:');
-        log.code('  npx ui69 add button');
-        log.code('  npx ui69 add input-otp');
-        log.code('  npx ui69 add drawer');
+        console.log('\\nQuick start:');
+        log.code('  npx ui69@latest add button');
+        log.code('  npx ui69@latest add input');
+        log.code('  npx ui69@latest add toast');
 
     } catch (error) {
         log.error('Failed to create theme.config.ts');
@@ -494,6 +529,12 @@ function getComponentsConfig() {
 
 // Interactive component selector with space selection
 async function selectComponents() {
+    // Check if theme config exists before allowing component selection
+    if (!checkThemeConfigExists()) {
+        showThemeConfigMissing();
+        process.exit(1);
+    }
+
     // Get components configuration
     const components = getComponentsConfig();
 
@@ -535,42 +576,25 @@ async function selectComponents() {
 
 // Function to install a component
 async function installComponent(component) {
+    // Check if theme config exists before allowing component installation
+    if (!checkThemeConfigExists()) {
+        showThemeConfigMissing();
+        process.exit(1);
+    }
+
     // Get components configuration
     const components = getComponentsConfig();
 
     // Check if the component exists
     if (!components[component]) {
         log.error(`Component '${component}' not found.`);
-        console.log(`\nAvailable components:\n${Object.keys(components).map(c => `  - ${c}`).join('\n')}`);
+        console.log(`\\nAvailable components:\\n${Object.keys(components).map(c => `  - ${c}`).join('\\n')}`);
         process.exit(1);
     }
 
     const config = components[component];
 
     log.title(`Installing ${config.name} component`);
-
-    // Check if theme.config.ts exists
-    const themeConfigPath = path.join(process.cwd(), 'theme.config.ts');
-    if (!fs.existsSync(themeConfigPath)) {
-        log.warning('theme.config.ts not found in your project.');
-        log.info('UI69 components require theme.config.ts to work properly.');
-
-        const response = await inquirer.prompt([
-            {
-                type: 'confirm',
-                name: 'initFirst',
-                message: 'Would you like to run "npx ui69 init" first to set up the theme?',
-                default: true
-            }
-        ]);
-
-        if (response.initFirst) {
-            await initializeProject();
-            console.log(''); // Add some spacing
-        } else {
-            log.warning('Proceeding without theme.config.ts. Components may not work correctly.');
-        }
-    }
 
     // Create the necessary directories and copy the files
     for (const file of config.files) {
@@ -608,12 +632,12 @@ async function installComponent(component) {
 
     // Show dependencies if any
     if (config.dependencies && config.dependencies.length > 0) {
-        log.info(`\n${config.name} requires the following dependencies:`);
+        log.info(`\\n${config.name} requires the following dependencies:`);
         config.dependencies.forEach(dep => {
             log.code(`  ${dep}`);
         });
 
-        console.log('\nInstall them with:');
+        console.log('\\nInstall them with:');
         if (config.dependencies.includes('expo-linear-gradient')) {
             log.code(`  npx expo install ${config.dependencies.join(' ')}`);
         } else {
@@ -622,7 +646,7 @@ async function installComponent(component) {
     }
 
     // Installation complete
-    log.success(`\n${config.name} installed successfully!`);
+    log.success(`\\n${config.name} installed successfully!`);
 }
 
 // List all available components
@@ -643,9 +667,11 @@ function listComponents() {
     });
 
     console.log('To add a component:');
-    log.code('  npx ui69 add <component>');
-    console.log('\nOr select from the interactive menu:');
-    log.code('  npx ui69 add');
+    log.code('  npx ui69@latest add <component>');
+    console.log('\\nOr select from the interactive menu:');
+    log.code('  npx ui69@latest add');
+
+    console.log('\\n' + colors.yellow + '⚠ Note: You must run "npx ui69@latest init" first to initialize ui69 in your project.' + colors.reset);
 }
 
 // Show a splash screen
@@ -707,19 +733,21 @@ async function main() {
             showSplash();
             log.title('ui69 CLI');
             console.log('A collection of unstyled, accessible UI components for React Native');
-            console.log('\nCommands:');
+            console.log('\\nCommands:');
             console.log('  init               Initialize ui69 in your project (creates theme.config.ts)');
             console.log('  add [component]    Add a component to your project (interactive if no component specified)');
             console.log('  list               List all available components');
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
-            console.log('\nExamples:');
-            log.code('  npx ui69 init');
-            log.code('  npx ui69 add button');
-            log.code('  npx ui69 add input-otp');
-            log.code('  npx ui69 add drawer');
-            log.code('  npx ui69 add     # Interactive component selection');
-            log.code('  npx ui69 list');
+            console.log('\\nExamples:');
+            log.code('  npx ui69@latest init');
+            log.code('  npx ui69@latest add button');
+            log.code('  npx ui69@latest add input');
+            log.code('  npx ui69@latest add toast');
+            log.code('  npx ui69@latest add     # Interactive component selection');
+            log.code('  npx ui69@latest list');
+
+            console.log('\\n' + colors.yellow + '⚠ Note: You must run "npx ui69@latest init" first before adding components.' + colors.reset);
             break;
     }
 }
