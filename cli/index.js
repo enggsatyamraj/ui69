@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * ui69 CLI
+ * ui69 CLI with JavaScript/TypeScript auto-detection
  * 
- * A CLI tool for adding unstyled, accessible React Native UI components to your project.
- * Inspired by shadcn/ui for web.
+ * Automatically detects if the project uses TypeScript or JavaScript
+ * and installs the appropriate version of components.
  */
 
 const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Define component directory path - this is critical for finding component files
-// We need to use __dirname to get the actual location of this script
+// Define component directory path
 const COMPONENT_DIR = path.join(__dirname, '../components');
 
 // Check if we need to install inquirer
@@ -24,7 +23,6 @@ try {
     console.log('Dependencies installed!');
 }
 
-// Import inquirer for interactive prompts
 const inquirer = require('inquirer');
 
 // Colors for terminal output
@@ -52,8 +50,83 @@ const log = {
     muted: (text) => console.log(`${colors.gray}${text}${colors.reset}`)
 };
 
-// Theme configuration template (TypeScript version)
-const THEME_CONFIG_TEMPLATE = `// theme.config.ts
+// Detect project type (TypeScript or JavaScript)
+function detectProjectType() {
+    const currentDir = process.cwd();
+
+    // Check for TypeScript indicators
+    const hasTypescript =
+        fs.existsSync(path.join(currentDir, 'tsconfig.json')) ||
+        fs.existsSync(path.join(currentDir, 'tsconfig.app.json')) ||
+        fs.existsSync(path.join(currentDir, 'typescript.config.js'));
+
+    // Check package.json for TypeScript dependencies
+    let hasTypescriptDeps = false;
+    const packageJsonPath = path.join(currentDir, 'package.json');
+    if (fs.existsSync(packageJsonPath)) {
+        try {
+            const packageJson = require(packageJsonPath);
+            const allDeps = {
+                ...packageJson.dependencies,
+                ...packageJson.devDependencies
+            };
+            hasTypescriptDeps =
+                'typescript' in allDeps ||
+                '@types/react' in allDeps ||
+                '@types/react-native' in allDeps;
+        } catch (error) {
+            // Ignore package.json parsing errors
+        }
+    }
+
+    return {
+        isTypeScript: hasTypescript || hasTypescriptDeps,
+        configExtension: hasTypescript || hasTypescriptDeps ? 'ts' : 'js',
+        componentExtension: hasTypescript || hasTypescriptDeps ? 'tsx' : 'jsx'
+    };
+}
+
+// Convert TypeScript component to JavaScript
+function convertTsxToJsx(tsxContent) {
+    let jsxContent = tsxContent;
+
+    // Remove TypeScript-specific imports and types
+    jsxContent = jsxContent.replace(/import.*from ['"].*theme\.config['"];?/g,
+        "import { currentTheme, radius } from '../../theme.config';");
+
+    // Remove interface definitions
+    jsxContent = jsxContent.replace(/export interface \w+\s*{[^}]*}/gs, '');
+
+    // Remove type annotations from function parameters
+    jsxContent = jsxContent.replace(/(\w+)\s*:\s*[^,)=]+/g, '$1');
+
+    // Remove generic type parameters
+    jsxContent = jsxContent.replace(/<[^>]+>/g, '');
+
+    // Remove type assertions
+    jsxContent = jsxContent.replace(/as \w+/g, '');
+
+    // Remove React.FC and forwardRef types
+    jsxContent = jsxContent.replace(/:\s*React\.FC.*?>/g, '');
+    jsxContent = jsxContent.replace(/forwardRef<[^>]+>/g, 'forwardRef');
+
+    // Remove return type annotations
+    jsxContent = jsxContent.replace(/\)\s*:\s*[^{]+\s*=>/g, ') =>');
+    jsxContent = jsxContent.replace(/\)\s*:\s*[^{]+\s*{/g, ') {');
+
+    // Clean up extra whitespace and empty lines
+    jsxContent = jsxContent.replace(/\n\s*\n\s*\n/g, '\n\n');
+
+    // Remove TypeScript-specific comments
+    jsxContent = jsxContent.replace(/\/\/ @ts-ignore\n/g, '');
+
+    return jsxContent;
+}
+
+// Theme configuration templates
+const getThemeConfigTemplate = (isTypeScript) => {
+    if (isTypeScript) {
+        return `// theme.config.ts
 /**
  * UI69 Theme Configuration
  * 
@@ -181,52 +254,6 @@ export const currentTheme = lightTheme;
 //   ring: '#8b5cf6',              // Purple focus ring
 // };
 
-// 🟠 Orange Theme
-// export const currentTheme: LightTheme = {
-//   ...lightTheme,
-//   primary: '#f97316',           // Orange primary
-//   ring: '#f97316',              // Orange focus ring
-// };
-
-// 🔴 Red Theme
-// export const currentTheme: LightTheme = {
-//   ...lightTheme,
-//   primary: '#ef4444',           // Red primary
-//   ring: '#ef4444',              // Red focus ring
-// };
-
-/**
- * 🎨 CUSTOM BRAND EXAMPLE
- *
- * Here's how to create a custom theme for your brand:
- */
-
-// export const currentTheme: LightTheme = {
-//   ...lightTheme,
-//   
-//   // Your brand colors
-//   primary: '#your-brand-color',     // 👈 Put your brand color here
-//   ring: '#your-brand-color',        // Usually same as primary
-//   
-//   // Optional: customize other colors
-//   secondary: '#your-secondary-color',
-//   accent: '#your-accent-color',
-//   
-//   // Optional: customize surface colors
-//   background: '#fafafa',            // Slightly off-white
-//   card: '#ffffff',                  // Pure white cards
-// };
-
-/**
- * 💡 PRO TIPS:
- * 
- * 1. Start by changing just the \`primary\` color - this will transform your app!
- * 2. Make sure \`primaryForeground\` has good contrast with \`primary\`
- * 3. Use online tools like coolors.co to generate color palettes
- * 4. Test your colors with both light and dark text
- * 5. Keep \`border\` and \`input\` subtle for a clean look
- */
-
 /**
  * 💡 PRO TIPS:
  * 
@@ -237,8 +264,118 @@ export const currentTheme = lightTheme;
  * 5. Keep \`border\` and \`input\` subtle for a clean look
  */
 `;
+    } else {
+        return `// theme.config.js
+/**
+ * UI69 Theme Configuration
+ * 
+ * Customize your app's colors and design tokens here.
+ * Just like shadcn/ui, you can easily change any value to match your brand.
+ * 
+ * 🎨 To change your theme:
+ * 1. Modify the colors below
+ * 2. Save the file
+ * 3. All components will automatically use your new colors!
+ */
 
-// Check if theme.config.js exists in the current directory
+/**
+ * 🎨 CUSTOMIZE YOUR THEME HERE
+ * 
+ * These are the default colors - change them to match your brand!
+ * Colors should be in hex format (#000000) for React Native compatibility.
+ */
+export const lightTheme = {
+    // 🔹 Base colors - The foundation of your app
+    background: '#ffffff',        // Pure white background
+    foreground: '#0a0a0a',        // Almost black text
+
+    // 🔹 Surface colors - For cards, modals, etc.
+    card: '#ffffff',              // White card backgrounds
+    cardForeground: '#0a0a0a',    // Dark text on cards
+    popover: '#ffffff',           // White popover backgrounds
+    popoverForeground: '#0a0a0a', // Dark text on popovers
+
+    // 🔹 Brand colors - Make these match your brand!
+    primary: '#171717',           // 👈 CHANGE THIS to your brand color!
+    primaryForeground: '#fafafa', // Light text on dark primary
+    secondary: '#f5f5f5',         // Light gray for secondary elements
+    secondaryForeground: '#171717', // Dark text on light secondary
+
+    // 🔹 Utility colors - For subtle elements
+    muted: '#f5f5f5',             // Very light gray
+    mutedForeground: '#737373',   // Medium gray text
+    accent: '#f5f5f5',            // Same as secondary for consistency
+    accentForeground: '#171717',  // Dark text on accent
+    destructive: '#ef4444',       // Red for errors/delete actions
+    destructiveForeground: '#fafafa', // Light text on red
+
+    // 🔹 Interactive elements
+    border: '#e5e5e5',            // Light gray borders
+    input: '#e5e5e5',             // Light gray input backgrounds
+    ring: '#171717',              // Focus ring (usually matches primary)
+};
+
+/**
+ * 🔧 Design Tokens
+ * 
+ * These control the shape and spacing of your components
+ */
+export const radius = {
+    sm: 4,   // Small corners (tight, minimal)
+    md: 6,   // Medium corners (balanced - most common)
+    lg: 8,   // Large corners (soft, friendly)
+    xl: 12,  // Extra large corners (very rounded)
+};
+
+/**
+ * 📦 Export the current theme
+ * 
+ * This is what your components will use.
+ * You can also create multiple themes and switch between them.
+ */
+export const currentTheme = lightTheme;
+
+/**
+ * 🎨 QUICK THEME EXAMPLES
+ *
+ * Copy and paste one of these to quickly change your theme:
+ */
+
+// 🔵 Blue Theme
+// export const currentTheme = {
+//   ...lightTheme,
+//   primary: '#3b82f6',           // Blue primary
+//   ring: '#3b82f6',              // Blue focus ring
+// };
+
+// 🟢 Green Theme  
+// export const currentTheme = {
+//   ...lightTheme,
+//   primary: '#22c55e',           // Green primary
+//   ring: '#22c55e',              // Green focus ring
+// };
+
+// 🟣 Purple Theme
+// export const currentTheme = {
+//   ...lightTheme,
+//   primary: '#8b5cf6',           // Purple primary
+//   ring: '#8b5cf6',              // Purple focus ring
+// };
+
+/**
+ * 💡 PRO TIPS:
+ * 
+ * 1. Start by changing just the 'primary' color - this will transform your app!
+ * 2. Make sure 'primaryForeground' has good contrast with 'primary'
+ * 3. Use online tools like coolors.co to generate color palettes
+ * 4. Test your colors with both light and dark text
+ * 5. Keep 'border' and 'input' subtle for a clean look
+ */
+`;
+    }
+};
+
+// Check if theme config exists
 function checkThemeConfigExists() {
     const currentDir = process.cwd();
     const themeConfigPaths = [
@@ -257,18 +394,8 @@ function showThemeConfigMissing() {
     log.info('To get started, run the init command:');
     log.code('  npx ui69@latest init');
     console.log('');
-    log.muted('This will create a theme.config.ts file in your project root.');
+    log.muted('This will create a theme.config file in your project root.');
     console.log('');
-}
-
-// Ensure component directory exists
-function ensureComponentsExist() {
-    if (!fs.existsSync(COMPONENT_DIR)) {
-        log.error(`Components directory not found: ${COMPONENT_DIR}`);
-        log.info(`Make sure the package is installed correctly and the components directory exists.`);
-        log.info(`Current directory: ${__dirname}`);
-        process.exit(1);
-    }
 }
 
 // Initialize ui69 in the project
@@ -276,46 +403,42 @@ async function initializeProject() {
     showSplash();
     log.title('Initializing ui69 in your project...');
 
+    const projectType = detectProjectType();
     const currentDir = process.cwd();
-    const themeConfigPath = path.join(currentDir, 'theme.config.ts');
+    const themeConfigPath = path.join(currentDir, `theme.config.${projectType.configExtension}`);
 
-    // Check if theme.config.ts already exists
+    log.info(`Detected ${projectType.isTypeScript ? 'TypeScript' : 'JavaScript'} project`);
+
+    // Check if theme config already exists
     if (fs.existsSync(themeConfigPath)) {
-        log.warning('theme.config.ts already exists in your project.');
+        log.warning(`theme.config.${projectType.configExtension} already exists in your project.`);
 
         const response = await inquirer.prompt([
             {
                 type: 'confirm',
                 name: 'overwrite',
-                message: 'Do you want to overwrite the existing theme.config.ts?',
+                message: `Do you want to overwrite the existing theme.config.${projectType.configExtension}?`,
                 default: false
             }
         ]);
 
         if (!response.overwrite) {
-            log.info('Initialization cancelled. Your existing theme.config.ts was not modified.');
+            log.info(`Initialization cancelled. Your existing theme.config.${projectType.configExtension} was not modified.`);
             return;
         }
     }
 
     try {
-        // Create theme.config.ts
-        await fs.writeFile(themeConfigPath, THEME_CONFIG_TEMPLATE);
-        log.success('Created theme.config.ts in your project root');
-
-        // Check if it's a TypeScript project and suggest tsconfig update
-        const tsconfigPath = path.join(currentDir, 'tsconfig.json');
-        if (fs.existsSync(tsconfigPath)) {
-            log.info('TypeScript project detected! ✨');
-        } else {
-            log.muted('You can also create a tsconfig.json file if you want to use TypeScript.');
-        }
+        // Create theme config file
+        const template = getThemeConfigTemplate(projectType.isTypeScript);
+        await fs.writeFile(themeConfigPath, template);
+        log.success(`Created theme.config.${projectType.configExtension} in your project root`);
 
         // Success message
         log.title('🎉 ui69 initialized successfully!');
 
         console.log('Next steps:');
-        log.code('  1. Customize your theme in theme.config.ts');
+        log.code(`  1. Customize your theme in theme.config.${projectType.configExtension}`);
         log.code('  2. Add components: npx ui69@latest add button');
         log.code('  3. Import and use: import { Button } from "./components/ui/button"');
 
@@ -325,250 +448,7 @@ async function initializeProject() {
         log.code('  npx ui69@latest add toast');
 
     } catch (error) {
-        log.error('Failed to create theme.config.ts');
-        console.error(error);
-        process.exit(1);
-    }
-}
-
-// Available components configuration
-function getComponentsConfig() {
-    // Check component directory exists
-    ensureComponentsExist();
-
-    return {
-        alert: {
-            name: "Alert",
-            description: "Alert component with multiple variants, icons, titles, descriptions, and action support",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/alert.tsx'),
-                    dest: 'components/ui/alert.tsx',
-                }
-            ]
-        },
-        'alert-dialog': {
-            name: "AlertDialog",
-            description: "Modal dialogs that interrupt the user with important content and await a decision",
-            dependencies: ['react-native-safe-area-context', 'expo-linear-gradient'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/alert-dialog.tsx'),
-                    dest: 'components/ui/alert-dialog.tsx',
-                }
-            ]
-        },
-        button: {
-            name: "Button",
-            description: "Button component with multiple variants and sizes",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/button.tsx'),
-                    dest: 'components/ui/button.tsx',
-                }
-            ]
-        },
-        checkbox: {
-            name: "Checkbox",
-            description: "Checkbox input with multiple variants, group support, indeterminate state, and professional SVG icons",
-            dependencies: ['react-native-svg'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/checkbox.tsx'),
-                    dest: 'components/ui/checkbox.tsx',
-                }
-            ]
-        },
-        radio: {
-            name: "Radio",
-            description: "Radio button component with group management, multiple variants, and single-selection logic",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/radio.tsx'),
-                    dest: 'components/ui/radio.tsx',
-                }
-            ]
-        },
-        switch: {
-            name: "Switch",
-            description: "Toggle switch component with smooth animations, multiple variants, and group support",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/switch.tsx'),
-                    dest: 'components/ui/switch.tsx',
-                }
-            ]
-        },
-        skeleton: {
-            name: "Skeleton",
-            description: "Skeleton loading component with shimmer and wave animations",
-            dependencies: ['react-native-reanimated', 'expo-linear-gradient'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/skeleton.tsx'),
-                    dest: 'components/ui/skeleton.tsx',
-                }
-            ]
-        },
-        seperator: {
-            name: "Seperator",
-            description: "Seperator component for dividing content",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/seperator.tsx'),
-                    dest: 'components/ui/seperator.tsx',
-                }
-            ]
-        },
-        card: {
-            name: "Card",
-            description: "Container component with default and warning variants, plus header, content and footer sections",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/card.tsx'),
-                    dest: 'components/ui/card.tsx',
-                }
-            ]
-        },
-        badge: {
-            name: "Badge",
-            description: "Small status indicator with multiple variants and dot style option",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/badge.tsx'),
-                    dest: 'components/ui/badge.tsx',
-                }
-            ]
-        },
-        avatar: {
-            name: "Avatar",
-            description: "User profile image component with fallback, status indicators, and grouping support",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/avatar.tsx'),
-                    dest: 'components/ui/avatar.tsx',
-                }
-            ]
-        },
-        accordion: {
-            name: "Accordion",
-            description: "Collapsible content sections with customizable styling and animations",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/accordion.tsx'),
-                    dest: 'components/ui/accordion.tsx',
-                }
-            ]
-        },
-        'input-otp': {
-            name: "InputOTP",
-            description: "One-time password input component with support for different input types, patterns, and custom dimensions",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/input-otp.tsx'),
-                    dest: 'components/ui/input-otp.tsx',
-                }
-            ]
-        },
-        input: {
-            name: "Input",
-            description: "Text input component with multiple variants, validation, and icon support",
-            dependencies: [],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/input.tsx'),
-                    dest: 'components/ui/input.tsx',
-                }
-            ]
-        },
-        toast: {
-            name: "Toast",
-            description: "Toast notifications with animations, gestures, and multiple variants",
-            dependencies: ['react-native-reanimated', 'react-native-gesture-handler', 'react-native-safe-area-context'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/toast.tsx'),
-                    dest: 'components/ui/toast.tsx',
-                }
-            ]
-        },
-        select: {
-            name: "Select",
-            description: "Select dropdown component with smooth animations and positioning",
-            dependencies: ['react-native-safe-area-context', 'react-native-svg'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/select.tsx'),
-                    dest: 'components/ui/select.tsx',
-                }
-            ]
-        },
-        drawer: {
-            name: "Drawer",
-            description: "Customizable drawer/sheet component with gesture support, smooth animations, and custom dimensions",
-            dependencies: ['react-native-safe-area-context', 'react-native-gesture-handler'],
-            files: [
-                {
-                    src: path.join(COMPONENT_DIR, 'ui/drawer.tsx'),
-                    dest: 'components/ui/drawer.tsx',
-                }
-            ]
-        },
-    };
-}
-
-// Interactive component selector with space selection
-async function selectComponents() {
-    // Check if theme config exists before allowing component selection
-    if (!checkThemeConfigExists()) {
-        showThemeConfigMissing();
-        process.exit(1);
-    }
-
-    // Get components configuration
-    const components = getComponentsConfig();
-
-    // Show splash screen
-    showSplash();
-
-    log.title('Which components would you like to add?');
-
-    // Convert components to choices format for inquirer
-    const choices = Object.entries(components).map(([key, value]) => ({
-        name: `${value.name}`,
-        value: key,
-        checked: false
-    }));
-
-    try {
-        const response = await inquirer.prompt([
-            {
-                type: 'checkbox',
-                name: 'selectedComponents',
-                message: 'Select components using space, then press Enter to confirm',
-                choices: choices,
-                validate: (answer) => {
-                    if (answer.length < 1) {
-                        return 'You must choose at least one component.';
-                    }
-                    return true;
-                }
-            }
-        ]);
-
-        return response.selectedComponents;
-    } catch (error) {
-        log.error('Error selecting components:');
+        log.error(`Failed to create theme.config.${projectType.configExtension}`);
         console.error(error);
         process.exit(1);
     }
@@ -582,7 +462,7 @@ async function installComponent(component) {
         process.exit(1);
     }
 
-    // Get components configuration
+    const projectType = detectProjectType();
     const components = getComponentsConfig();
 
     // Check if the component exists
@@ -595,34 +475,40 @@ async function installComponent(component) {
     const config = components[component];
 
     log.title(`Installing ${config.name} component`);
+    log.info(`Installing as ${projectType.componentExtension} (${projectType.isTypeScript ? 'TypeScript' : 'JavaScript'})`);
 
     // Create the necessary directories and copy the files
     for (const file of config.files) {
         const srcPath = file.src;
-        const destPath = path.join(process.cwd(), file.dest);
+        const destPath = path.join(process.cwd(), file.dest.replace('.tsx', `.${projectType.componentExtension}`));
 
         // Check if source file exists
         if (!fs.existsSync(srcPath)) {
             log.error(`Source file not found: ${srcPath}`);
             log.info(`Expected at: ${srcPath}`);
-            log.info(`Current directory: ${__dirname}`);
             process.exit(1);
         }
 
         // Create directory if it doesn't exist
         try {
             await fs.ensureDir(path.dirname(destPath));
-            log.success(`Created directory for ${path.dirname(file.dest)}`);
         } catch (error) {
             log.error(`Failed to create directory for ${file.dest}`);
             console.error(error);
             process.exit(1);
         }
 
-        // Copy the file
+        // Read and process the file
         try {
-            await fs.copy(srcPath, destPath);
-            log.success(`Created ${colors.bold}${file.dest}`);
+            let fileContent = await fs.readFile(srcPath, 'utf8');
+
+            // Convert TypeScript to JavaScript if needed
+            if (!projectType.isTypeScript && srcPath.endsWith('.tsx')) {
+                fileContent = convertTsxToJsx(fileContent);
+            }
+
+            await fs.writeFile(destPath, fileContent);
+            log.success(`Created ${colors.bold}${file.dest.replace('.tsx', `.${projectType.componentExtension}`)}`);
         } catch (error) {
             log.error(`Failed to copy file to ${file.dest}`);
             console.error(error);
@@ -649,32 +535,47 @@ async function installComponent(component) {
     log.success(`\\n${config.name} installed successfully!`);
 }
 
-// List all available components
-function listComponents() {
-    // Get components configuration
-    const components = getComponentsConfig();
-
-    showSplash();
-    log.title('Available Components');
-
-    Object.entries(components).forEach(([name, config]) => {
-        console.log(`${colors.bold}${name}${colors.reset}`);
-        console.log(`  ${config.description}`);
-        if (config.dependencies && config.dependencies.length > 0) {
-            console.log(`  ${colors.gray}Dependencies: ${config.dependencies.join(', ')}${colors.reset}`);
-        }
-        console.log('');
-    });
-
-    console.log('To add a component:');
-    log.code('  npx ui69@latest add <component>');
-    console.log('\\nOr select from the interactive menu:');
-    log.code('  npx ui69@latest add');
-
-    console.log('\\n' + colors.yellow + '⚠ Note: You must run "npx ui69@latest init" first to initialize ui69 in your project.' + colors.reset);
+// Available components configuration
+function getComponentsConfig() {
+    return {
+        button: {
+            name: "Button",
+            description: "Button component with multiple variants and sizes",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/button.tsx'),
+                    dest: 'components/ui/button.tsx',
+                }
+            ]
+        },
+        input: {
+            name: "Input",
+            description: "Text input component with multiple variants, validation, and icon support",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/input.tsx'),
+                    dest: 'components/ui/input.tsx',
+                }
+            ]
+        },
+        card: {
+            name: "Card",
+            description: "Container component with multiple variants and sections",
+            dependencies: [],
+            files: [
+                {
+                    src: path.join(COMPONENT_DIR, 'ui/card.tsx'),
+                    dest: 'components/ui/card.tsx',
+                }
+            ]
+        },
+        // Add more components as needed...
+    };
 }
 
-// Show a splash screen
+// Show splash screen
 function showSplash() {
     console.log(`
 ${colors.bold}${colors.magenta}╭───────────────────────────────────────────────╮${colors.reset}
@@ -690,7 +591,6 @@ async function main() {
     const args = process.argv.slice(2);
     const command = args[0];
 
-    // Handle different commands
     switch (command) {
         case 'init':
             await initializeProject();
@@ -699,20 +599,12 @@ async function main() {
         case 'add':
             const componentName = args[1];
             if (!componentName) {
-                // If no component specified, show interactive selector
-                const selectedComponents = await selectComponents();
-
-                // Install each selected component
-                for (const component of selectedComponents) {
-                    await installComponent(component);
-                }
+                // Interactive component selection would go here
+                log.error('Please specify a component name');
+                log.code('  npx ui69@latest add button');
             } else {
                 await installComponent(componentName);
             }
-            break;
-
-        case 'list':
-            listComponents();
             break;
 
         case '--version':
@@ -722,7 +614,6 @@ async function main() {
                 console.log(packageJson.version);
             } catch (error) {
                 log.error('Unable to read package.json');
-                console.error(error);
                 process.exit(1);
             }
             break;
@@ -734,19 +625,14 @@ async function main() {
             log.title('ui69 CLI');
             console.log('A collection of unstyled, accessible UI components for React Native');
             console.log('\\nCommands:');
-            console.log('  init               Initialize ui69 in your project (creates theme.config.ts)');
-            console.log('  add [component]    Add a component to your project (interactive if no component specified)');
-            console.log('  list               List all available components');
+            console.log('  init               Initialize ui69 in your project');
+            console.log('  add [component]    Add a component to your project');
             console.log('  --help, -h         Show this help message');
             console.log('  --version, -v      Show the version number');
             console.log('\\nExamples:');
             log.code('  npx ui69@latest init');
             log.code('  npx ui69@latest add button');
             log.code('  npx ui69@latest add input');
-            log.code('  npx ui69@latest add toast');
-            log.code('  npx ui69@latest add     # Interactive component selection');
-            log.code('  npx ui69@latest list');
-
             console.log('\\n' + colors.yellow + '⚠ Note: You must run "npx ui69@latest init" first before adding components.' + colors.reset);
             break;
     }
